@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>
+        Featurepreneur
+    </title>
+    {% include "header2.html" %}
+
+    <link href="{{ url_for('static', filename='css/vidoe-site.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/vidoe-single.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/185291b53f.js" crossorigin="anonymous"></script>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" />
+
+    <link href="{{ url_for('static', filename='css/main2.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/all2.css') }}" rel="stylesheet">
+
+</head>
+
+<body>
+
+    {% include "top_nav_loggedin.html" %}
+    <!-- <div class="btn sidebar_button" style="z-index: 9;margin-top: 157px;"> <span class="fas fa-bars" ></span> </div> -->
+
+    <div class="video-main">
+
+        <!-- Course Menu (left) -->
+        <div class="left-video left-close" id="left-video">
+            <div class="btn sidebar_button click" style="z-index: 999">
+            <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
+                stroke-linejoin="round" class="toggle-icon" height="16" width="16" xmlns="http://www.w3.org/2000/svg">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            </div>
+            <nav class="sidebar show" style="z-index: 99; position: fixed; margin-top: 0px">
+                <div class="text">Course Videos</div>
+                <div class="tabs">
+                    
+                    <!-- Chapter -->
+                    {% for chap in side_nav %}
+                    <div class="tab">
+                        <input class="check-btn" type="checkbox" id="chck_{{loop.index}}" />
+                        <label class="tab-label" for="chck_{{loop.index}}">{{chap.chap_name}}</label>
+                        <div class="tab-content">
+                            <ul>
+                                {% for topic in chap.chapter_topics %}
+                                <li>
+                                    <a href="/course/video/{{chap.course_id}}/{{topic.ttc_id}}">{{topic.video_title}}</a>
+                                </li>
+                                {% endfor %}
+                                
+                            </ul>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <!--/ Chapter -->
+                </div>
+            </nav>
+        </div>
+        <!--/ Course Menu (left) -->
+
+        <!-- Video (right) -->
+        <div class="right-video right-close" id="right-video">
+            <section class="inner-pg-dash">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="/features">Home</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/subscribed/courses">Courses</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/course/{{course_id}}">{{course_name}}</a>
+                    </li>
+                    <li class="breadcrumb-item">{{result.video_title}}</li>
+                    </ol>
+                </nav>
+                <div class="embed-responsive embed-responsive-16by9">
+                    {% if vimeo %}
+                    <iframe
+                        src="https://player.vimeo.com/video/{{result.video_link}}?badge=0&amp;amp;autopause=0&amp;amp;player_id=0&amp;amp;app_id=58479 "
+                        width="50% " height="1000"
+                        frameborder="0"
+                        allow="autoplay; fullscreen; picture-in-picture "
+                        allowfullscreen title=" ">
+                    </iframe>
+
+                    <!-- <iframe src="https://player.vimeo.com/video/564035901?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:50%;" title="Spin Time - Soniya Sam - June 13, 2021"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script> -->
+                    {% else %}
+                    <!-- <p>{{result.video_link}}</p> -->
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/il_t1WVLNxk" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                    </iframe>
+                    {% endif %}
+                </div>
+                <div class="video-details">
+                    <div class="video-details-inner">
+                        <div class="video-title">
+                            <h2>{{result.video_title}}</h2>
+                            <!-- <span>Ubuntu part's more</span> -->
+                        </div>
+                        <div class="video-right-bar">
+                            <div class="video-left-list">
+                                <!-- <a class="add-plus">
+                                    <img src="{{ url_for('static', filename='img/plus.svg') }}" alt="plus" class="img-fluid" />
+                                    <i class="fa-solid fa-arrow-down-long"></i>
+                                    <span>Add Nots</span>
+                                </a> -->
+                                <!-- <a class="share-notes">
+                                    <img src="{{ url_for('static', filename='img/dots.svg') }}" alt="plus" class="img-fluid" />
+                                </a> -->
+                            </div>
+                            <div class="video-right-list">
+                                {% if prev != None %}
+                                    <a class="previous-arrow" href="/course/video/{{course_id}}/{{prev}}">
+                                        <img src="{{ url_for('static', filename='img/left-arrow.svg') }}" alt="left-arrow" class="img-fluid" />
+                                        <span>previous video</span>
+                                    </a>
+                                {% endif %}
+
+                                {% if next != None %}
+                                <a class="Next-arrow" href="/course/video/{{course_id}}/{{next}}">
+                                    <span>Next video</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                                    <!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+                                    <path
+                                        d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z" />
+                                    </svg>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Learners Note -->
+                    
+                    {% if learners_note|length > 0 %}
+                    <div class="video-description">
+                        <h2>Learners' Note</h2>
+                        <div class="profile-notes">
+                            
+                            {% for lnote in learners_note %}
+                            <div class="profile-des">
+                                <p>
+                                    {{ lnote.content }}
+                                </p>
+                                <div class="follow-btn">
+                                    <!-- <a href="#">
+                                    <span>Notes Creator</span>
+                                    <img src="{{ url_for('static', filename='img/green-arrow.svg') }}" alt="next-arrow" />
+                                    </a> -->
+                                </div>
+                            </div>
+                            {% endfor %}
+                            
+
+                            <!-- <div class="pagination-main">
+                                <div class="pagination-inner pagination-left">
+                                    <a href="#">
+                                    <img src="{{ url_for('static', filename='img/left-arrow.svg') }}" alt="left-arrow" class="img-fluid" /></a>
+                                </div>
+                                <div class="pagination-inner pagination-right">
+                                    <a href="#"><img src="{{ url_for('static', filename='img/next-arrow.svg') }}" alt="next-arrow" class="img-fluid" /></a>
+                                </div>
+                            </div> -->
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Learners Note -->
+
+
+                </div>
+            </section>
+        </div>
+        <!-- Video (right) -->
+
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery-3.2.1.slim.min.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script>
+        $(".sidebar_button").click(function () {
+            $(this).toggleClass("click");
+            $(".sidebar").toggleClass("show");
+
+            $("#left-video").toggleClass("left-close");
+            $("#right-video").toggleClass("right-close");
+        });
+
+        $(".sidebar ul li a ").click(function () {
+            var id = $(this).attr("id");
+            $("nav ul li ul.item-show-" + id).toggleClass("show");
+            $("nav ul li #" + id + " span").toggleClass("rotate");
+        });
+
+        $("nav ul li").click(function () {
+            $(this).addClass("active").siblings().removeClass("active");
+        });
+    </script>
+
+</body>
+</html>

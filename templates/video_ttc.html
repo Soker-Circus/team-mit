@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>
+        Featurepreneur
+    </title>
+    {% include "header.html" %}
+
+    <link href="{{ url_for('static', filename='css/vidoe-site.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/vidoe-single.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/185291b53f.js" crossorigin="anonymous"></script>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" />
+   
+
+
+
+</head>
+
+<style>
+    .sidebar {
+        padding: 20px;
+    }
+
+    .navbar-side {
+        padding-left: 30px;
+    }
+    body {
+  font-size: 2em;
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
+  margin: 50px;
+  background-color: white;
+}
+
+.custom-counter {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+
+}
+
+.custom-counter li {
+  counter-increment: step-counter;
+  margin-bottom: 10px;
+  
+
+}
+
+.custom-counter li::before {
+  content: counter(step-counter);
+  margin-right: 10px;
+  font-size: 90%;
+  background-color:white;
+  color: rgb(4,86,145);
+  font-weight: bold;
+  padding: 3px 8px;
+  border-radius: 3px;
+ 
+}
+    .card {
+        position: absolute;
+       
+        margin-right: 25rem;
+    
+        z-index: -1;
+
+       
+        color:rgb(255,255,255);
+
+        border: 1px solid;
+        margin-left: 44rem;
+        
+        box-shadow: 5px 5px 5px 5px #888888;
+      margin-top: 5rem;
+
+      min-width: 55%;
+      min-height: 30%;
+        }
+
+        .sidebar_button {
+            position: absolute;
+            top: 139px;
+            left: 45px;
+            height: 64px;
+            width: 37px;
+            text-align: center;
+            background: #055791;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: left 0.4s ease
+        }
+        .sidebar_button.click {
+            left: 550px
+        }
+        .sidebar_button span {
+            color: white;
+            font-size: 20px;
+            line-height: 36px
+        }
+        .sidebar_button.click span:before {
+            content: '\f00d'
+        }
+        .sidebar {
+            position: fixed;
+            width: 500px;
+            height: 100%;
+            left: -500px;
+            background: white;
+            transition: left 0.4s ease;
+    
+            
+
+        }
+        .sidebar.show {
+            left: 0px;
+
+      
+        }
+        .scrollable{
+            overflow-y: scroll;
+        }
+        .sidebar .text {
+            color: white;
+            font-size: 19px;
+            font-weight: 600;
+            line-height: 65px;
+            text-align: center;
+            background: #055791;
+            letter-spacing: 1px
+        }
+        .sidebar ul {
+            background: white;
+            height: 100%;
+            width: 100%;
+            list-style: none;
+            padding-left: 10px
+        }
+        .sidebar ul li {
+            line-height: 50px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1)
+        }
+        .sidebar ul li:last-child {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05)
+        }
+        .sidebar ul li a {
+            position: relative;
+            color: black;
+            text-decoration: none;
+            font-size: 18px;
+            padding-left: 14px;
+            font-weight: 500;
+            display: block;
+            width: 100%;
+            border-left: 3px solid transparent
+        }
+        .sidebar ul li.active a {
+            color: black ;
+            background:white;
+            border-left-color: #055791;
+        }
+        .sidebar ul li a:hover {
+            background: rgb(233, 225, 225);
+        }
+        .feat-show {
+            transition: all 0.5s
+        }
+        .sidebar ul li.active ul {
+            transition: all 0.5s
+        }
+        .sidebar ul ul {
+            position: static;
+            display: none
+        }
+        .sidebar ul.show {
+            display: block;
+            transition: all 0.5s
+        }
+        .sidebar ul ul li {
+            line-height: 42px;
+            border-top: none
+        }
+        .sidebar ul ul li a {
+            font-size: 16px;
+            color: black
+        }
+        .sidebar ul li.active ul li a {
+            color: 055791;
+            background: white;
+            border-left-color: transparent;
+        }
+        a:hover {
+            color: #19417e  !important
+     
+        }
+        .sidebar ul ul li a:hover {
+            color: #19417e !important;
+            background: white !important
+        }
+        .sidebar ul li a span {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            font-size: 15px;
+            transition: transform 0.4s
+        }
+        .sidebar ul li a span.rotate {
+            transform: translateY(-50%) rotate(-180deg)
+        }
+        .content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            z-index: -1;
+            text-align: center
+        }
+
+
+
+
+
+
+
+
+
+        .tipscontainer {
+    background-color: white;
+    text-align: center;
+    box-shadow: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    /* box-shadow: 0 20px 40px rgba(0, 0, 0, 0.58); */
+    border-radius: 20px;
+    margin-top: 50px;
+    margin-bottom: 50px
+}
+.rowtips{
+    padding-bottom: 53px
+}
+.custom-counter {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+.custom-counter li {
+  counter-increment: step-counter;
+  margin-bottom: 10px;
+}
+.custom-counter li::before {
+  content: counter(step-counter);
+  margin-right: 10px;
+  font-size: 90%;
+  background-color:white;
+  color: rgb(4,86,145);
+  font-weight: bold;
+  padding: 3px 8px;
+  border-radius: 3px;
+}
+</style>
+
+<body>
+
+  
+    {% include "top_nav_loggedin.html" %}
+    <div class="btn sidebar_button" style="z-index: 9;margin-top: 157px;"> <span class="fas fa-bars" ></span> </div>
+    <nav class="sidebar" style="z-index: 9;position: absolute;margin-top: 135px;height:577px;">
+        <div class="text"> Course Videos </div>
+        <ul class="main_side scrollable" style="height:480px;">
+            {% for chap in side_nav %}
+            <li class="" id = "{{chap.chap_index}}"><a href="/course/video/{{chap.course_id}}/{{chap.chapter_topics[0].ttc_id}}" style="font-weight: bold;color:#055791">{{chap.chap_name}}
+                {% for topic in chap.chapter_topics %}
+            <li class="{{'active' if result.ttc_id == topic.ttc_id }}"><a href="/course/video/{{chap.course_id}}/{{topic.ttc_id}}" style="color: #636363;">{{topic.video_title}}</a></li>
+            {% endfor %}
+            </a>
+            </li>
+                
+            {% endfor %}
+        </ul>
+        <!-- <ul class="main_side">
+            <li class="active"><a href="#">Week 1<span class="fas fa-caret-down"></span></a>
+                <ul class="item-show-1">
+                    <li><a href="#">W2-1 - Predicting house prices: A case study in regression</a></li>
+                    <li><a href="#">W2-1 - Predicting house prices: A case study in regression</a></li>
+                </ul></li>
+            <li> <a href="#" id="1">Week 2 <span class="fas fa-caret-down"></span> </a>
+                <ul class="item-show-2">
+                    <li><a href="#">W2-1 - Predicting house prices: A case study in regression</a></li>
+                    <li><a href="#">W2-1 - Predicting house prices: A case study in regression</a></li>
+                </ul>
+            </li>
+            <li> <a href="#" id="2">week 3 <span class="fas fa-caret-down"></span> </a>
+                <ul class="item-show-2">
+                    <li><a href="#">Spin Time 3</a></li>
+                    <li><a href="#">spin Time 4</a></li>
+                </ul>
+            </li>
+            <li><a href="#">Week 4</a></li>
+            <li><a href="#">Week 5</a></li>
+            <li><a href="#">Week 6</a></li>
+            <li><a href="#">week 7</a></li>
+        </ul> -->
+    </nav>
+
+    <section class="inner-pg-dash" style="max-height: 837px; min-height: 793px;">
+
+        <div class="container">
+            <main class="d-flex">
+                <div class="content-wrapper p-3">
+                    <div class="row">
+                        <!-- 
+            <div class="col-sm-8">
+                <div class="embed-responsive embed-responsive-16by9">
+
+                    <iframe src="https://player.vimeo.com/video/?title=0&amp;byline=0&amp;portrait=0&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
+                    width="1152" height="720" frameborder="0" 
+                    allow="autoplay; fullscreen; picture-in-picture" allowfullscreen 
+                    title=""></iframe>
+
+                </div>
+                <h6 class="mt-2">{{result.title}}</h6>
+                <div class="d-flex justify-content-between align-items-center">
+                     <div>
+                        2 views •
+                        March 13, 2021        
+                    </div> 
+                    <div>
+                        <div id="p0" data-pjax-container="" data-pjax-push-state data-pjax-timeout="1000">                
+                            
+                        </div>            </div>
+                </div>
+                <div>
+                   
+                </div>
+
+            </div>
+            <div class="col-sm-4">
+                    </div>
+        </div>
+            </div>
+        </main>
+        </div> -->
+
+                        <div class="home">
+                            <div class="container-fluid display-table">
+                                <div class="row display-table-row">
+                                    <!-- <div class="col-md-2 col-sm-1 hidden-xs display-table-cell v-align box navbar-side" id="navigation">
+                        <div id="slide-out" class="side-nav fixed">
+                            <ul class="custom-scrollbar">
+
+                                Side navigation links
+
+                                <li>
+                                    <ul class="collapsible collapsible-accordion">
+                                        <strong>Course Content</strong>
+
+                                        <div class="collapsible-body">
+                                            <ul class="list-unstyled">
+
+                                                {% for vid in course_videos %}
+                                                <li class="sidebar">
+                                                    <i class="fas fa-book"></i>
+
+                                                    <a href="{{vid.coursevideo_id}}" class="waves-effect">{{vid.title}}</a>
+                                                </li>
+                                                {% endfor %}
+                                                
+
+                                            </ul>
+                                        </div>
+                                </li>
+                                Single item
+                                </ul>
+                                </li>
+                                Side navigation links
+                            </ul>
+                        </div>
+                        Sidenav
+
+
+                    </div> -->
+
+
+
+
+                                    <nav aria-label="breadcrumb">
+                                        <ol class="breadcrumb">
+                                            <li class="breadcrumb-item"><a href="/features">Home</a></li>
+                                            <li class="breadcrumb-item"><a href="/all/courses">Courses</a></li>
+                                            <li class="breadcrumb-item">
+                                                <a href="/course/{{course_id}}">Course</a>
+                                            </li>
+                                            <li class="breadcrumb-item">
+                                                {{result.video_title}}
+                                            </li>
+                                        </ol>
+                                    </nav>
+
+
+
+
+                                    <div class="col-md-10 col-sm-11 display-table-cell v-align">
+                                        <!-- <button type="button" class="slide-toggle">Slide Toggle</button> -->
+                                        <!-- Introduction Basic example-->
+                                        <div class="row">
+                                            <header>
+                                                <div class="col-md-7">
+                                                    <nav class="navbar-default pull-left">
+                                                        <div class="navbar-header">
+                                                            <button type="button" class="navbar-toggle collapsed"
+                                                                data-toggle="offcanvas" data-target="#side-menu"
+                                                                aria-expanded="false">
+                                                                <span class="sr-only">Toggle navigation</span>
+                                                                <span class="icon-bar"></span>
+                                                                <span class="icon-bar"></span>
+                                                                <span class="icon-bar"></span>
+                                                            </button>
+                                                        </div>
+                                                    </nav>
+
+                                                </div>
+
+
+                                            </header>
+                                        </div>
+
+    
+                                        <div class="user-dashboard">
+                                            
+                                            <h1>
+
+                                            </h1>
+
+                                            <div class="row">
+
+                                                <main class="d-flex mx-auto d-block">
+                                                    <div class="content-wrapper p-3">
+                                                        <div class="row">
+
+                                                            <div class=" col-sm-8 " style="width:105%; height: 30%;margin-left: 15rem;padding-bottom: 10px;">
+                                                                <div class="embed-responsive embed-responsive-16by9 ">
+                                                                    {% if vimeo %}
+
+                                                                    <iframe
+                                                                        src="https://player.vimeo.com/video/{{result.video_link}}?badge=0&amp;amp;autopause=0&amp;amp;player_id=0&amp;amp;app_id=58479 "
+                                                                        width="50% " height="1000"
+                                                                        frameborder="0"
+                                                                        allow="autoplay; fullscreen; picture-in-picture "
+                                                                        allowfullscreen title=" ">
+                                                                    </iframe>
+
+                                                                    <!-- <iframe src="https://player.vimeo.com/video/564035901?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:50%;" title="Spin Time - Soniya Sam - June 13, 2021"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script> -->
+                                                                    {% else %}
+                                                                    <!-- <p>{{result.video_link}}</p> -->
+                                                                    <iframe width="560" height="315" src="{{result.video_link}}" frameborder="0"
+							                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+							                                                allowfullscreen>
+                                                                    </iframe>
+                                                                    {% endif %}
+                                                                    
+
+                                                                </div>
+                                                                <div style="margin-bottom:10px;">
+                                                                <br>
+                                                                {% if prev != None %}
+                                                                <a href="/course/video/{{course_id}}/{{prev}}" style="padding-left: 1rem;">Previous</a>
+
+                                                                {% endif %}
+                                                                {% if next != None %}
+                                                                <a href="/course/video/{{course_id}}/{{next}}" style="float: right; padding-right: 1rem;">Next</a>
+                                                                {% endif %}
+                                                                <!-- <h6 class="mt-2 "></h6> -->
+                                                                </div>
+                                                                <div
+                                                                    class="d-flex justify-content-between align-items-center ">
+                                                                    <div>
+                                                                        <!-- 2 views •
+                                              March 13, 2021         -->
+                                                                    </div>
+                                                                    <div>
+                                                                        <div id="p0 " data-pjax-container=" "
+                                                                            data-pjax-push-state
+                                                                            data-pjax-timeout="1000 ">
+
+                                                                            <!-- <i class="fas fa-thumbs-down "></i> 0</a> -->
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div>
+                                                                    <p>
+                                                                        <!-- <a class="text-dark channel-link " href="/c/rajacsp ">Sharmila</a>            -->
+                                                                    </p>
+                                                                </div>
+
+                                                            </div>
+                                                            <div class="col-sm-4 ">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </main>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+    </section>
+
+  <br>{% if edit == True %}
+  <div style="max-width:80%;margin: auto;">
+  <form action="/course/video/tips/submit/{{course_id}}/{{result.ttc_id}}" method="POST">
+  <div class="form-group shadow-textarea">
+    <textarea class="form-control form-rounded"
+     name="tips"
+     rows="10"  value= "">{{results.tips}}</textarea>
+</div>
+    <div class="form-group" style="float: right;">
+        <button type="submit" id="add_job_button" class="btn btn-primary my-4">
+            Update Tips
+        </button>
+    </div>
+</div>
+</form>
+</div>
+    {% else %}
+      
+        {% if results.tips %}
+         <div class='tips'style="margin-left: 23rem;" >
+
+        <div class=' tipscontainer mx-auto mt-5 col-md-10 col-11' style=" margin:auto;box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;">
+
+            <br>
+            <h1> Tips </h1>
+            <br>
+
+            {% if results.tips_moderator == True %}
+            <a class="btn btn-primary" href="/course/video/{{course_id}}/{{result.ttc_id}}/edit" style="z-index:9;float: right;margin-top: -84px;">edit tips</a>
+            {% endif %}
+                <div class="row rowtips" style="justify-content: center">
+                                        <ol class="custom-counter" style="color: #000; text-align: left;margin-left:20px;">
+                    {% for tip in results.tips %}
+                        <li>{{tip}}</li>
+                    {% endfor %}
+                </ol>
+            </div>
+           </div>
+           </div>
+                  {% else %}
+                  {% if results.tips_moderator == True %}
+            <a class="btn btn-primary" href="/course/video/{{course_id}}/{{result.ttc_id}}/edit" style="margin-left: -36rem;margin-top:170px;z-index: 9;">Add tips</a>
+            {% endif %}
+                  <!-- <h3 style="text-align: center;"> No Tips for this video! </h3> -->
+        {% endif %}
+    
+   
+    {% endif %}
+
+    <script>
+
+    $('.sidebar_button').click(function () {
+        $(this).toggleClass("click");
+        $('.sidebar').toggleClass("show");
+    });
+
+
+    $('.sidebar ul li a ').click(function () {
+        var id = $(this).attr('id');
+        $('nav ul li ul.item-show-' + id).toggleClass("show");
+        $('nav ul li #' + id + ' span').toggleClass("rotate");
+
+    });
+
+    $('nav ul li').click(function () {
+        $(this).addClass("active").siblings().removeClass("active");
+    });
+</script>
+    <footer class="footer animated fadeIn">
+        <div class="container">
+            <div class="row">
+                <!-- <div class="col-md-3">
+                  <h3>Related Links</h3>
+                  <ul>
+                      <li><a href="#">Terms of Conditions</a></li>
+                      <li><a href="#">Privacy Policy</a></li>
+                      <li><a href="#">FAQ</a></li>
+                      <li><a href="#">Support</a></li>
+                      <li><a href="#">Contact Us</a></li>
+                  </ul>
+              </div> -->
+                <div class="col-md-2">
+                    <!-- <h3>Links</h3>
+                    <ul>
+    
+                        <li><a href="immigration">Immigration</a></li>
+                        <li><a href="rd">Research Developer Program</a></li>
+                    </ul> -->
+                </div>
+                <div class="col-md-5">
+                    <!-- <h3>Latest Blogs</h3>
+                  <ul>
+                      <li><a href="#">Hire the Right Talent That Strengthens Your Organization</a></li>
+                      <li><a href="#">Github magic</a></li>
+                      <li><a href="#">Why collective Intelligence is important in IT?</a></li>
+                      <li><a href="#">Show off your skills in a different way!</a></li>
+                      <li><a href="#">How to solve startup hiring problem?</a></li>
+                  </ul> -->
+                </div>
+                <div class="col-md-2">
+                    <!-- <h3>Community</h3>
+                    <ul>
+                        <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i>Twitter</a></li>
+                        <li><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i>LinkedIn</a></li>
+                        <li><a href="#"><i class="fa fa-youtube" aria-hidden="true"></i>YouTube</a></li>
+                    </ul> -->
+                </div>
+                <div class="col-sm-12 text-center copy">
+                    {% include "copyright.html" %}
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script>
+        // restricting the right click
+        // document.addEventListener('contextmenu', event => event.preventDefault());
+    </script>
+
+</body>
+
+</html>
+
+</html>

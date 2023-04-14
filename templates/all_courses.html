@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>
+        Featurepreneur
+    </title>
+    {% include "header.html" %}
+
+    <!-- <link href="{{ url_for('static', filename='css/vidoe-site.css') }}" rel="stylesheet"> -->
+
+    <link href="/static/css/course.css" rel="stylesheet" />
+</head>
+<style>
+    .navbar-breadcrumb {
+        padding-top: 50px;
+        margin-left: 280px;
+    }
+    
+    .css-la8o5m {
+        padding-top: 0 !important;
+    }
+</style>
+
+<body>
+
+    {% include "top_nav_loggedin.html" %}
+
+    <div>
+
+        <div class="css-1l95nvm eecpty40">
+            <div id="mongodb-nav-data">
+            </div>
+            <div class="css-jfggi0 e1vxon761">
+                <main class="css-1htmiyc e1vxon760">
+                    <nav aria-label="breadcrumb" class="navbar-breadcrumb" style="margin-left: 80px;">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/features">Home</a></li>
+                            | <a href="/all/courses"><b>Browse Courses</b></a></li>
+                            | <a href="/subscribed/courses">Subscribed Courses</a></li>
+                        </ol>
+                    </nav>
+                   
+                    <div class="css-la8o5m e1kn3xjd0">
+
+                        <section class="css-16sikft eb4cao11">
+
+                            <div class="css-1u8na4f eb4cao10">
+                                <h2 data-test="catalog-title" class="css-p16b7 e1a1m3xa0">Browse All Courses</h2>
+                                <p data-test="catalog-subtitle" class="css-g9klz e1a1m3xa2">
+
+                                    Welcome to Featurepreneur!
+                                    <br> These are the courses available for subscription 
+                                    
+                                </p>
+                                <div data-test="skill-level-filter-container" class="css-1u8na4f ennyv8k0">
+                                </div>
+                            </div>
+                           
+                            <div class="mb-5"></div>
+
+                            <div class="css-1vscems el085710">
+                                <!--course -->
+                                {% for course in result %}
+                                <div class="css-1wa9r4y ex6vx2y0">
+                                    <div class="card-drop-shadow css-124m2ub ex6vx2y1">
+                                        <div class="css-mye1xv ex6vx2y2">
+                                            <aside data-proctor="true" data-project="Course Catalog" data-action="M001 Course Card Click" data-test="catalog-course-card" class="eq3x5x10 e1hu6m9t0 css-yycytj e1tj9b233">
+                                                <section class="css-hym75y e1tj9b231">
+                                                    <a href="/course/{{course.course_id}}" class="e4ifd9j8 css-f9pd1t">
+                                                        <div class="css-12ukw00 e4ifd9j7">
+                                                            <i class="course-graphic-M001 course-preview-graphic css-jr6j29 e1t2zrg10"></i></div>
+
+                                                        <div class="css-184nas0 e4ifd9j3">
+                                                            <!-- <p class="css-1kyf21d e4ifd9j1">BC212</p> -->
+                                                            <h4 class="css-1hkjljg e4ifd9j2">
+                                                                {{course.name}}
+                                                            </h4>
+                                                            <p class="css-o5kys4 e4ifd9j5">
+                                                                <!-- 3 Tech Components -->
+                                                            </p>
+                                                        </div>
+                                                        <p class="call-to-action css-swts7m e4ifd9j4">View Course</p>
+                                                    </a>
+                                                </section>
+                                            </aside>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                                <!--/ course -->
+                            </div>
+                        </section>
+                    </div>
+            </div>
+            </main>
+        </div>
+    </div>
+    </div>
+
+    {% include "footer.html" %}
+
+</body>
+
+</html>
