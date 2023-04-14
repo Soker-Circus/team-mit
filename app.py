@@ -245,6 +245,18 @@ def login_user(username,password):
 
     return result_dict
 
+@app.route('/logout', methods=['GET'])
+def page_logout_get():
+
+    if(SESSION_ID_KEY in session):
+        del session[SESSION_ID_KEY]
+
+    resp = make_response(redirect(url_for('page_login_get')))
+
+    resp.set_cookie('user_id', '', expires=0)
+
+    return resp
+
 @app.route('/login', methods=['POST'])
 def page_login_post():
 
@@ -896,9 +908,9 @@ def get_contribution_of(user_id):
     return data
 
 @app.route('/api/la/add/article', methods=["POST"])
-# @requires_apikey
+
 def addArticle():
-    # data = json.loads(request.data)
+ 
     data = request.get_json()
 
     user_id = int(data['user_id'])
@@ -914,7 +926,7 @@ def addArticle():
 
     result_dict = create_article_link_doc(
         user_id, title, link, date, la_tags)
-    # return str(result_dict)
+   
     result_dict = {
         "message": "article info added successfully"
     }
@@ -967,8 +979,6 @@ def get_last_lac_id():
 
 def create_article_link_doc(user_id, title, link, date, la_tags):
 
-    # la_tags = list(la_tags)
-    # #print(la_tags)
     col = db["user_details"]
     col2 = db["lp_collection"]
     col3 = db["lp_tags"]
@@ -981,13 +991,6 @@ def create_article_link_doc(user_id, title, link, date, la_tags):
 
     UTC_datetime_timestamp = int(UTC_datetime.strftime("%s"))
 
-    # query = {'user_id': int(user_id), 'title': title}
-    # cursor = f12_la_collection_van.find_one(query)
-
-    # tag_id = cursor["tag_ids"]
-
-    # tags = f12_la_tags_van.find_one({'la_tag': la_tag})
-    # la_tag_id = tags["la_tag_id"]
     if len(la_tags) == 0:
         query = {'user_id': int(user_id), 'title': title}
 
@@ -1012,8 +1015,7 @@ def create_article_link_doc(user_id, title, link, date, la_tags):
             create_contribution(user_id, date)
 
     for la_tag in la_tags:
-        # #print(la_tags)
-        # #print(la_tag)
+        
 
         query = {'user_id': int(user_id), 'title': title}
 
@@ -1052,14 +1054,7 @@ def create_article_link_doc(user_id, title, link, date, la_tags):
                 col2.insert_one(article_data)
                 create_contribution(user_id, date)
 
-            # # if not int(la_tag_id) in cursor["tag_ids"]:
-            #     tag_id.append(la_tag_search["la_tag_id"])
-
-            #     f12_la_collection_van.update_one(
-            #         {"la_id" : cursor["la_id"]}, {'$set': {'tag_ids' : tag_id}})
-
         if not la_tag_search:
-            # #print(la_tag)
 
             add_la_tag(la_tag, user_id, title, la_tags, link, date)
 
@@ -1079,11 +1074,8 @@ def get_last_la_tag_id():
 
     return last_la_tag_id
 
-
-
 def add_la_tag(la_tag, user_id, title, la_tags, link, date):
-    # #print(la_tags)
-    # #print(la_tag)
+   
     col = db["lp_tags"]
     col2 = db["lp_collection"]
 
@@ -1147,11 +1139,8 @@ def add_la_tag(la_tag, user_id, title, la_tags, link, date):
             col2.insert_one(article_data)
             create_contribution(user_id, date)
 
-            # add_la_tags(la_tag)
-
     except pymongo.errors.DuplicateKeyError as duplicate_error:
         return False
-
 
 if __name__ == '__main__':
     app.run('0.0.0.0', 3000, True)
