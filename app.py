@@ -7,13 +7,8 @@ import re
 
 from datetime import datetime
 from flask_cors import CORS
-import random
-import urllib.request
-from urllib.parse import urlparse
-from functools import wraps
-from authlib.integrations.flask_client import OAuth
-# from decouple import config
-from werkzeug.utils import secure_filename
+
+
 import pymongo
 from pymongo import MongoClient
 from flask_pymongo import PyMongo,pymongo
@@ -22,7 +17,7 @@ from flask import Flask
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 import os
-import logging
+
 
 # DB import
 from flask_pymongo import PyMongo,pymongo
