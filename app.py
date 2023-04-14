@@ -430,9 +430,9 @@ def la_dashboard():
         top_contributors = get_top_contributors()
 
         if recent_links:
-            recent_links = recent_links['links']
-        if top_contributors["result"]:
-            top_contributors = top_contributors["result"]['contributors']
+            recent_links = recent_links
+        if top_contributors:
+            top_contributors = top_contributors
         user_id = get_userid()
         logged_in = is_session_valid()
 
@@ -533,9 +533,9 @@ def get_data_id(da):  # for pagination
             del doc["_id"]
             d = doc["updated_at"].split("-")
             # #print("csc",doc["updated_at"])
+            from datetime import datetime
 
-            doc["updated_at"] = datetime(int(d[0]), int(
-                d[1]), int(d[2])).strftime("%A, %d %B %Y")
+            doc["updated_at"] = datetime(int(d[0]), int(d[1]), int(d[2])).strftime("%A, %d %B %Y")
 
             # #print("first_date",first_date)
 
@@ -602,8 +602,8 @@ def la_contributors():
         }
         results = get_data_id(data)
 
-        return render_template('learning-analytics-contributors.html', data=result['contributors'], logged_in=logged_in, username=results["username"])
-    return render_template('learning-analytics-contributors.html', data=result['contributors'], logged_in=logged_in)
+        return render_template('learning-analytics-contributors.html', data=result, logged_in=logged_in, username=results["username"])
+    return render_template('learning-analytics-contributors.html', data=result, logged_in=logged_in)
 
 def get_total_score_for(username_to_search):
     col1 = db["user_details"]
@@ -705,7 +705,7 @@ def user_articles(username):
         "_id": None
     }
     all_tags = la_get_user_tags(data["user_id"])
-    all_tags = all_tags["user_tag_list"]
+    all_tags = all_tags
     result = get_data_id(data)
     return render_template('learning-analytics-user_articles.html', data=result['data'], username=result["username"], tags=all_tags)
 
@@ -803,7 +803,7 @@ def la__mylist_make_link_public():
         "title": title
     }
 
-    result_json = make_article_link_public(data)
+    result_json = make_article_link_public(user_id,title)
 
     data = {
         "user_id": int(user_id),
@@ -894,6 +894,263 @@ def get_contribution_of(user_id):
     for docs in col.find({'user_id': int(user_id)}):
         data.append({'date': docs['created_at'], 'contrib': docs['contrib']})
     return data
+
+@app.route('/api/la/add/article', methods=["POST"])
+# @requires_apikey
+def addArticle():
+    # data = json.loads(request.data)
+    data = request.get_json()
+
+    user_id = int(data['user_id'])
+    link = data['link']
+    title = data['title']
+    date = data['date']
+    try:
+
+        la_tags = data["tags"]
+
+    except:
+        la_tags = []
+
+    result_dict = create_article_link_doc(
+        user_id, title, link, date, la_tags)
+    # return str(result_dict)
+    result_dict = {
+        "message": "article info added successfully"
+    }
+    return result_dict
+
+def get_last_la_id():
+
+    col = db["lp_collection"]
+
+    get_last_la_id = col.find().sort(
+        [('la_id', -1)]).limit(1)
+
+    try:
+        last_la_id = get_last_la_id[0]['la_id']
+
+    except Exception as err:
+       
+        last_la_id = 0
+
+    return last_la_id
+
+def create_contribution(user_id, date):
+    col = db["lp_contribution"]
+    query = {'user_id': user_id, 'created_at': date}
+    contrib_doc = col.find_one(query)
+
+    if(contrib_doc):
+        col.update_one(
+            query, {'$set': {'contrib': contrib_doc['contrib']+1}})
+    else:
+        contrib_data = {'lac_id': get_last_lac_id(
+        )+1, 'user_id': user_id, 'created_at': date, 'contrib': 1}
+        col.insert_one(contrib_data)
+
+def get_last_lac_id():
+
+    col = db["lp_contribution"]
+
+    get_last_lac_id = col.find().sort([
+        ('lac_id', -1)]).limit(1)
+
+    try:
+        last_lac_id = get_last_lac_id[0]['lac_id']
+
+    except Exception as err:
+       
+        last_lac_id = 0
+
+    return last_lac_id
+
+def create_article_link_doc(user_id, title, link, date, la_tags):
+
+    # la_tags = list(la_tags)
+    # #print(la_tags)
+    col = db["user_details"]
+    col2 = db["lp_collection"]
+    col3 = db["lp_tags"]
+
+    cr = date.split("-")
+
+    from datetime import datetime
+
+    UTC_datetime = datetime.utcnow()
+
+    UTC_datetime_timestamp = int(UTC_datetime.strftime("%s"))
+
+    # query = {'user_id': int(user_id), 'title': title}
+    # cursor = f12_la_collection_van.find_one(query)
+
+    # tag_id = cursor["tag_ids"]
+
+    # tags = f12_la_tags_van.find_one({'la_tag': la_tag})
+    # la_tag_id = tags["la_tag_id"]
+    if len(la_tags) == 0:
+        query = {'user_id': int(user_id), 'title': title}
+
+        cursor = col2.find_one(query)
+        if cursor:
+            col2.update_one(
+                {"la_id": cursor["la_id"]}, {'$set': {'updated_at': date}})
+        else:
+            article_data = {
+                'la_id': get_last_la_id()+1,
+                'user_id': user_id,
+                'link': link,
+                'title': title,
+                'tag_ids': [],
+                'created_at': date,
+                "updated_at": date,
+                'isPrivate': False,
+                'created_at_timestamp': UTC_datetime_timestamp
+            }
+
+            col2.insert_one(article_data)
+            create_contribution(user_id, date)
+
+    for la_tag in la_tags:
+        # #print(la_tags)
+        # #print(la_tag)
+
+        query = {'user_id': int(user_id), 'title': title}
+
+        cursor = col2.find_one(query)
+
+        la_tag_search = col3.find_one({
+            "la_tag": {
+                "$regex": la_tag,
+                '$options': 'i'
+            }},
+        )
+
+        if la_tag_search:
+            la_tag_id = la_tag_search["la_tag_id"]
+
+            if cursor:
+                tag_id = cursor["tag_ids"]
+                if not int(la_tag_id) in cursor["tag_ids"]:
+                    tag_id.append(la_tag_search["la_tag_id"])
+                    col2.update_one(
+                        {"la_id": cursor["la_id"]}, {'$set': {'tag_ids': tag_id}})
+
+            else:
+                article_data = {
+                    'la_id': get_last_la_id()+1,
+                    'user_id': user_id,
+                    'link': link,
+                    'title': title,
+                    'tag_ids': [(la_tag_search["la_tag_id"])],
+                    'created_at': date,
+                    "updated_at": date,
+                    'isPrivate': False,
+                    'created_at_timestamp': UTC_datetime_timestamp
+                }
+
+                col2.insert_one(article_data)
+                create_contribution(user_id, date)
+
+            # # if not int(la_tag_id) in cursor["tag_ids"]:
+            #     tag_id.append(la_tag_search["la_tag_id"])
+
+            #     f12_la_collection_van.update_one(
+            #         {"la_id" : cursor["la_id"]}, {'$set': {'tag_ids' : tag_id}})
+
+        if not la_tag_search:
+            # #print(la_tag)
+
+            add_la_tag(la_tag, user_id, title, la_tags, link, date)
+
+    return "Success"
+
+def get_last_la_tag_id():
+
+    col = db["lp_tags"]
+
+    last_la_tag_id = col.find().sort([('la_tag_id', -1)]).limit(1)
+
+    try:
+        last_la_tag_id = last_la_tag_id[0]['la_tag_id']
+    except Exception as err:
+     
+        last_la_tag_id = 0
+
+    return last_la_tag_id
+
+
+
+def add_la_tag(la_tag, user_id, title, la_tags, link, date):
+    # #print(la_tags)
+    # #print(la_tag)
+    col = db["lp_tags"]
+    col2 = db["lp_collection"]
+
+    last_la_tag_id = get_last_la_tag_id()
+
+    current_la_tag_id = last_la_tag_id + 1
+
+    cr = date.split("-")
+
+    from datetime import datetime
+
+    UTC_datetime = datetime.utcnow()
+
+    UTC_datetime_timestamp = int(UTC_datetime.strftime("%s"))
+
+    try:
+
+        la_tags_dict = {
+            "la_tag_id": current_la_tag_id,
+            "la_tag": la_tag,
+            "created_at": datetime.now(),
+            "updated_at": datetime.now()
+        }
+        col.insert_one(la_tags_dict)
+        query = {'user_id': int(user_id), 'title': title}
+
+        cursor = col2.find_one(query)
+
+        la_tag_search = col.find_one({
+            "la_tag": {
+                "$regex": la_tag,
+                '$options': 'i'
+            }},
+        )
+        la_tag_id = la_tag_search["la_tag_id"]
+        if cursor:
+            tag_id = cursor["tag_ids"]
+
+            col2.update_one(
+                {"la_id": cursor["la_id"]}, {'$set': {'updated_at': date}})
+
+            if not int(la_tag_id) in cursor["tag_ids"]:
+                tag_id.append(la_tag_search["la_tag_id"])
+
+                col2.update_one(
+                    {"la_id": cursor["la_id"]}, {'$set': {'tag_ids': tag_id}})
+
+        if cursor is None:
+            article_data = {
+                'la_id': get_last_la_id()+1,
+                'user_id': user_id,
+                'link': link,
+                'title': title,
+                'tag_ids': [(la_tag_search["la_tag_id"])],
+                'created_at': date,
+                "updated_at": date,
+                'isPrivate': False,
+                'created_at_timestamp': UTC_datetime_timestamp
+            }
+
+            col2.insert_one(article_data)
+            create_contribution(user_id, date)
+
+            # add_la_tags(la_tag)
+
+    except pymongo.errors.DuplicateKeyError as duplicate_error:
+        return False
 
 
 if __name__ == '__main__':
