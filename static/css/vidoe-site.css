@@ -1,0 +1,78 @@
+html,
+body {
+    height: 100%;
+}
+
+main {
+    flex: 1;
+}
+
+.content-wrapper {
+    flex: 1;
+}
+
+aside {
+    min-width: 200px;
+}
+
+aside .nav-pills .nav-link {
+    border-radius: 0;
+    color: #444444;
+}
+
+
+aside .nav-pills .nav-link:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+aside .nav-pills .nav-link.active {
+    background: rgba(0, 0, 0, 0.05);
+    color: #b90000;
+    border-left: 4px solid #b90000;
+}
+
+.content-wrapper {
+    margin-bottom: 200px;
+}
+
+.create-comment .action-buttons {
+    display: none;
+}
+
+.create-comment.focused .action-buttons {
+    display: block;
+}
+
+.comment-item {
+    position: relative;
+}
+
+.comment-avatar {
+    width: 50px;
+}
+
+.sub-comments .comment-avatar {
+    width: 24px;
+}
+
+.comment-actions {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.comment-actions .dropdown-toggle:after {
+    display: none;
+}
+
+.comment-item .media-input {
+    display: none;
+}
+
+.comment-item.edit .media-comment {
+    display: none;
+}
+
+.comment-item.edit .media-input {
+    display: flex;
+}

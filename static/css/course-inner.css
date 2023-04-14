@@ -1,0 +1,137 @@
+/* subscribe */
+.subscribe-main {
+  padding: 96px 0 170px;
+  background-color: #d1e7ff;
+}
+.subscribe-main .subscribe-inner h2 {
+  margin-top: 0px;
+  color: #25265e;
+  font-weight: bold;
+  font-size: 36px;
+  line-height: 54px;
+  margin-bottom: 16px;
+}
+
+.subscribe-main .subscribe-inner p {
+  font-size: 17px;
+  line-height: 28px;
+  color: rgba(37, 38, 94, 0.67);
+  margin-bottom: 46px;
+  font-weight: 500;
+}
+.subscribe-main .subscribe-inner button {
+  min-height: 48px;
+  background: #50bf9f;
+  color: #fff;
+  padding: 14px 50px;
+  border-radius: 0.25rem;
+  font-size: 16px;
+  text-align: center;
+  transition: all 0.2s ease-in-out;
+  border: 0px;
+  font-weight: bold;
+}
+/* Current credit */
+.current-credit-main {
+  margin-top: -80px;
+}
+.current-credit-main .current-credit-inner .row {
+  display: flex;
+  align-items: flex-end;
+}
+.current-credit-main .current-credit-inner {
+  padding: 30px;
+  margin-bottom: 48px;
+  border: 1px solid #d3dce6;
+  border-radius: 12px;
+  background-color: #fff;
+  box-shadow: 0 8px 12px rgb(58 45 0 / 12%);
+}
+.current-credit-main .current-credit-inner .current-credit-details {
+  position: relative;
+  padding-left: 40px;
+}
+.current-credit-main .current-credit-inner .current-credit-details::before {
+  content: "";
+  position: absolute;
+  width: 2px;
+  height: 43%;
+  background: #50bf9f;
+  left: 20px;
+}
+
+.current-credit-main .current-credit-inner .current-credit-details h2 {
+  font-size: 16px;
+  margin-top: 0px;
+  margin-bottom: 8px;
+  font-weight: 600;
+  line-height: 23px;
+}
+.current-credit-main .current-credit-inner .current-credit-details p {
+  font-size: 30px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  font-weight: 700;
+}
+.current-credit-main .current-credit-inner .current-credit-details span {
+  position: absolute;
+  top: 48%;
+  right: 40px;
+  font-size: 40px;
+  font-weight: bold;
+  color: #50bf9f;
+}
+.current-credit-main .current-credit-inner .subscribe-btn {
+  text-align: end;
+}
+.current-credit-main .current-credit-inner .subscribe-btn button {
+  min-height: 48px;
+  background: #50bf9f;
+  color: #fff;
+  padding: 14px 50px;
+  border-radius: 0.25rem;
+  font-size: 16px;
+  text-align: center;
+  transition: all 0.2s ease-in-out;
+  border: 0px;
+  font-weight: bold;
+}
+/* Media Query */
+/* 1199 */
+@media only screen and (max-width: 1199px) {
+  .current-credit-main .current-credit-inner .current-credit-details {
+    padding-left: 20px;
+  }
+  .current-credit-main .current-credit-inner .current-credit-details::before {
+    content: "";
+    left: 0px;
+  }
+  .current-credit-main .current-credit-inner .current-credit-details h2 {
+    font-size: 14px;
+  }
+  .current-credit-main .current-credit-inner .current-credit-details p {
+    font-size: 25px;
+  }
+  .current-credit-main .current-credit-inner .current-credit-details span {
+    top: 56%;
+    right: 30px;
+    font-size: 30px;
+  }
+  .current-credit-main .current-credit-inner .current-credit-details {
+    padding-bottom: 50px;
+  }
+  .current-credit-main .current-credit-inner .current-credit-details span {
+    left: 30px;
+    top: 67%;
+  }
+  .current-credit-main .current-credit-inner .current-credit-details::before {
+    content: "";
+    height: 30%;
+  }
+}
+/* 991 */
+@media only screen and (max-width: 991px) {
+  .current-credit-main .current-credit-inner .row {
+    display: block;
+  }
+}

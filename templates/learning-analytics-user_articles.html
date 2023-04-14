@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Featurepreneur</title>
+    {% include "header.html" %}
+
+    <!-- Bootstrap -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet"> -->
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!--SCRIPT FILES-->
+    <!-- <script src="https://code.jquery.com/jquery-3.5.1.js"
+        integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+        integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+
+     CSS FILES -->
+    <!-- <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" /> -->
+    <style>
+        .top-container {
+            padding: 5px 0;
+        }
+
+
+
+        .search-bar-container {
+            /* background-color: #fff; */
+            display: flex;
+            padding: 30px 15px 0px;
+        }
+
+        #search_article {
+            background-color: rgb(255, 255, 255);
+            border: 1px solid #ccc;
+            width: 100rem;
+            margin-bottom: 0;
+        }
+
+        #search-btn {
+            background-color: #055791;
+            color: #fff;
+            font-weight: 600;
+            margin-left: 20px;
+            width: 110px;
+        }
+
+        #search-btn:hover {
+            background-color: #2a76ac;
+
+        }
+
+        .article-links a {
+            color: #055791;
+        }
+
+        .article-links-btn {
+            display: flex;
+            float: right;
+            margin-right: 85px;
+            margin-top: -19px;
+        }
+
+        .btn-primary {
+            font-size: 16px;
+            padding: 10px 10px;
+            margin-right: 10px;
+
+        }
+
+        .pro .pro_cont {
+            padding: 18px
+        }
+
+        .pro .content-box__title-bar {
+            height: 55px;
+        }
+
+        .delete-btn {
+            background-color: rgb(255, 0, 0);
+            border: 1px solid transparent;
+        }
+
+        .delete-btn:hover {
+            background-color: rgb(230, 89, 89);
+            border: 1px solid transparent;
+        }
+
+        .content-box__title-bar,
+        .content-box__title {
+            background-color: rgb(251, 251, 251) !important;
+        }
+
+        .main-container {
+            padding-top: 20px;
+        }
+
+        .btn-outline-warning {
+            border-color: orange !important;
+            background-color: #fff;
+            color: orange;
+            outline: 2px;
+        }
+
+        .btn-outline-danger {
+            border-color: red !important;
+            background-color: #fff;
+            color: red;
+
+        }
+
+        .btn-outline-primary {
+            border: 2.5px solid #055791;
+            font-weight: 600;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: #055791;
+            color: #fff;
+        }
+
+        .breadcrumb>li+li:before {
+            color: #ccc;
+            content: "| ";
+            padding: 0 5px;
+        }
+
+        .tags {
+            background-color: white;
+            color: black;
+            padding: 20px;
+            font-size: 19px;
+        }
+
+        .filter-row {
+            background-color: white;
+        }
+
+        .filter-checkbox {
+            margin: 10px;
+        }
+
+        .tags input {
+            margin: 0 5px 0 30px;
+        }
+
+        /* .filter-button:hover{
+            color: #ffffff;
+            background-color: #5a1bc0;
+        } */
+    </style>
+
+</head>
+
+<body>
+    {% include "top_nav_loggedin.html" %}
+
+    <section class="inner-pg-dash top-container">
+        <div class="container">
+            <div class="row">
+
+                <nav aria-label="breadcrumb" style="margin-top:40px;">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/la/dashboard">Dashboard</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">My Links</li>
+                        <li class="breadcrumb-item "><a href="/la/contributors">Contributors</a></li>
+                        <li class="breadcrumb-item"><a href="/learning/partner">Learning Partner</a></li>
+                        <li class="breadcrumb-item" style="float: right;"><a href="/la/settings"><i
+                                    class="fas fa-cog"></i></a></li>
+
+                        <!-- <li class="breadcrumb-item active" aria-current="page">Library</li> -->
+                    </ol>
+                </nav>
+                <!-- <div class="col-sm-12 search-bar-container">
+                    <div>
+                        <input class="form-control mr-sm-2" id='search_article' tyep="text" placeholder="Search Article"
+                            aria-label="Search">
+                    </div>
+                    <div>
+                        <button class="btn btn-outline-success my-2 my-sm-0" id="search-btn">Search</button>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </section>
+
+    <section class="inner-pg-dash main-container">
+
+        <div class="container">
+            <!-- <button onclick="toggleFilter()" type="button" style="padding:7px; background-color:rgb(208, 229, 255); border-radius:10px; 
+                padding-left: 25px;padding-right: 25px; border: none;">Filter</button> -->
+
+            <!-- <form action="/la/{{username}}/articles/filter" method="post">
+
+                <div class="filter-row">
+                    <h4 style=" padding-top :20px; 
+                                padding-left: 50px;
+                                color: rgba(119, 119, 119, 0.825);
+                                font-size: 17px;
+                                ">Filters
+                        <hr>
+
+                    </h4>
+                    <div class="tags">
+
+                         <input class="filter-checkbox" type="checkbox" name="filter-tags" value="python">Python
+                   
+
+                        {%for tag in tags%}
+                            <input class="filter-checkbox" type="checkbox" name="filter-tags" value="sql">{{tag}}
+                        {%endfor%}
+                    </div>
+                    <div style="display: flex;">
+                       
+                        <input class="filter-button" type="submit" style="margin: 20px ;margin-left: 42% ; padding:7px; background-color:#ffffff; border-radius:50px; 
+                    padding-left: 25px;padding-right: 25px;border-color: #1b7bc0; color: #055791; ">
+                            Filter Tags
+                        </input>
+
+                      
+                    </div>
+                </div>
+            </form> -->
+            <div class="row">
+                <h3 style="text-align: center; padding-bottom: 20px;">{{username}}'s Article Links</h3>
+                <div class="col-md-12">
+                    <section class="project_pg profile-m-box section">
+                        <article class="row">
+                            <div class="col-sm-12">
+                                {% for date in data %}
+
+                                <article class="pro article-block">
+
+
+
+                                    <!-- <div class="content-box__title-bar"> -->
+
+                                    <div class="content-box__title article-links">
+
+
+
+
+                                        <div class="pro_cont credit-stat ">
+
+                                            <!-- <input type="submit" id="currentDateTime" style="
+                                                border: none;
+                                               padding-left: 2.5rem;
+                                                color:rgb(161, 161, 161);
+                                                font-weight:bolder;
+                                                font-size:100%;
+                                                background-color: transparent;
+                                                resize: none;
+                                                outline: none;"> -->
+                                            <h3 style="padding-left: 2.5rem;
+                                                color:rgb(119, 119, 119);
+                                                /* font-weight:bolder; */
+                                                font-size:100%;
+                                                background-color: transparent;
+                                                resize: none;
+                                                outline: none;">{{date[0].updated_at}}</h3>
+                                            <hr>
+                                            <br>
+                                            {% for link in date %}
+
+                                            <div class="row" style="margin-left:23px;">
+                                                <Div style="  display: inline-block;
+                                               white-space: nowrap;
+                                               overflow: hidden;
+                                               text-overflow: ellipsis; 
+                                               -o-text-overflow: ellipsis;
+                                                /* max-width: 100% !important; */
+                                                width: 76%  !important;">
+                                                    <div class="col-sm-2" style="  display: inline-block;
+                                                white-space: nowrap;
+                                                overflow: hidden;
+                                                text-overflow: ellipsis; 
+                                                -o-text-overflow: ellipsis;
+                                                 max-width: 71% !important;
+                                                 width: auto  !important;">
+                                                        <a href="{{link.link}}" target="_blank"
+                                                            style="padding-right:10px;">{{link.title}}</a>
+
+                                                    </div>
+                                                    <div class="col-sm-2" style="color:rgb(119, 119, 119);">
+                                                        {% set list1 = link.link. split('/') %}
+                                                        {{list1[2]}}
+                                                    </div>
+                                                </Div>
+
+                                                <br>
+                                                <div class="col-sm-2 article-links-btn">
+                                                    <form action="/la/mylist/delete/article" method="POST">
+                                                        <input type="hidden" name="title" value="{{link.title}}">
+                                                        <input type="hidden" name="created_at"
+                                                            value="{{link.created_at}}">
+                                                        <button type="submit"
+                                                            style="display: inline-block;margin-right:10px; margin-top: -8rem;"
+                                                            class="btn btn-outline-danger">Delete</button>
+                                                        <!-- <a href="/la/make_link_private" style="color:Orange;">Make Private </a> -->
+                                                    </form>
+
+                                                    <br>
+                                                    <!-- <div>
+                                                    <button type="button" class="btn btn-primary delete-btn">
+                                                        Delete </button>
+                                                </div> -->
+
+                                                    <!-- <form action="/la/mylist/make_link_public" method="POST">
+                                                    <input type="hidden" name="title" >
+                                                    <button type="submit" style="display: inline-block;" class="btn btn-outline-warning">Make Public</button> -->
+                                                    <!-- <a href="/la/make_link_private" style="color:Orange;">Make Private </a> -->
+                                                    <!-- </form> -->
+                                                    {% if link.isPrivate %}
+                                                    <form action="/la/mylist/make_link_public" method="POST">
+                                                        <input type="hidden" name="title" value="{{link.title}}">
+                                                        <button type="submit"
+                                                            style="display: inline-block;margin-top: -8rem; border-color: rgb(2, 110, 2) !important; color: rgb(2, 110, 2) !important;"
+                                                            class="btn btn-outline-warning">Make Public</button>
+                                                        <!-- <a href="/la/make_link_private" style="color:Orange;">Make Private </a> -->
+                                                    </form>
+                                                    {% else %}
+                                                    <form action="/la/mylist/make_link_private" method="POST">
+                                                        <input type="hidden" name="title" value="{{link.title}}">
+                                                        <button type="submit"
+                                                            style="display: inline-block;margin-top: -8rem;"
+                                                            class="btn btn-outline-warning">Make Private</button>
+                                                        <!-- <a href="/la/make_link_private" style="color:Orange;">Make Private </a> -->
+                                                    </form>
+                                                    {% endif %}
+
+
+
+
+
+
+                                                </div>
+
+                                            </div>
+                                            {% endfor %}
+
+
+                                        </div>
+                                    </div>
+
+                                </article>
+                                {% endfor %}
+                                <br>
+
+                            </div>
+                        </article>
+
+
+
+
+
+
+
+                    </section>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    {% include "footer.html" %}
+</body>
+
+</html>

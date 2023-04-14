@@ -1,0 +1,84 @@
+.course-banner-section::before {
+    content: "";
+    height: 309px;
+  }
+  .course-sidebar-main {
+    padding: 20px;
+    top: 110px;
+  }
+  .sidebar .course-sidebar h3 {
+    text-align: center;
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 30px;
+  }
+  
+  .sidebar p {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 17px;
+    font-weight: 500;
+  }
+  /* description-section */
+  
+  .description-section h2 {
+    font-size: 24px;
+    line-height: 36px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    margin-top: 0px;
+  }
+  .description-section .description-inner-sec {
+    padding: 30px;
+    margin-bottom: 48px;
+    border: 1px solid #d3dce6;
+    border-radius: 12px;
+    background-color: #fff;
+  }
+  .description-section .description-inner-sec p {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 20px;
+  }
+  .description-section .description-inner-sec span {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  .description-inner-sec .dubble-discription-list {
+    display: flex;
+  }
+  .description-inner-sec .dubble-discription-list ul {
+    width: 50%;
+  }
+  .description-section .description-inner-sec ul {
+    margin-top: 20px;
+    padding-left: 10px;
+  }
+  .description-section .description-inner-sec ul li {
+    font-size: 14px;
+    margin-bottom: 10px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+  }
+  .description-section .description-inner-sec ul li a:hover {
+    color: #50bf9f;
+    text-decoration: none;
+  }
+  .description-section .description-inner-sec ul li img {
+    width: 14px;
+    margin-right: 8px;
+  }
+  @media only screen and (max-width: 768px) {
+    .course-banner-section::before {
+      content: "";
+      height: 210px !important;
+    }
+    .description-inner-sec .dubble-discription-list {
+      display: block;
+    }
+    .description-inner-sec .dubble-discription-list ul {
+      width: 100%;
+    }
+  }
+  
