@@ -1756,6 +1756,66 @@ def page_show_single_video_ttc_get(course_id, ttc_id):
         course_id       = int(course_id)
     )
 
+import os
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+from datetime import datetime, timezone
+from datetime import date
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+SMTP_FROM       = os.getenv('SMTP_FROM')
+SMTP_PASSWORD   = os.getenv('SMTP_PASSWORD')
+SMTP_PORT       = os.getenv('SMTP_PORT')
+SMTP_URL        = os.getenv('SMTP_URL')
+SMTP_USERNAME   = os.getenv('SMTP_USERNAME')
+ERROR_RECIPIENTS    = os.environ["ERROR_RECIPIENTS"]
+
+def str_to_list(content, delimiter = ','):
+    content_list = content.split(delimiter)
+    return content_list
+
+def send_email(
+    email_subject, 
+    email_body,
+    to_emails
+):
+
+    message = Mail(
+        from_email      = SMTP_FROM,
+        to_emails       = to_emails,
+        subject         = email_subject,
+        html_content    = email_body
+    )
+
+    try:
+        sg_client       = SendGridAPIClient(SMTP_PASSWORD)
+        response        = sg_client.send(message)
+
+        print(response.status_code)
+        print(response.body)
+        # print(response.headers)
+    except Exception as e:
+        print('Error : ', e)
+
+@app.route("/send/email", methods = ["GET"])
+def send_email_post():
+
+
+    to_emails       = str_to_list(ERROR_RECIPIENTS)
+    email_subject   = 'Test Email'
+    html_content    = 'Some dummy content'
+
+    send_email(
+        email_subject,
+        html_content,
+        to_emails
+    )
+
+    return "sent successfully"
+  
 
 if __name__ == '__main__':
     app.run('0.0.0.0', 3000, True)
