@@ -18,15 +18,7 @@ import pymongo
 from pymongo import MongoClient
 
 app = Flask(__name__)
-
-app.secret_key = 'enjaamiFennelda$S'
-
-oauth = OAuth(app)
-
-cors = CORS(app)
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
+app.secret_key = 'enjaamiTale$eFennelda$S'
 SESSION_ID_KEY = "sid"
 
 UPLOAD_FOLDER = 'static/uploads/'
@@ -56,9 +48,11 @@ def get_userid():
 @app.route('/', methods=['GET', 'POST'])
 def page_index():
     logged_in = is_session_valid()
+
+    user_id = get_userid()
     # tlogger.info("logged_in", logged_in)
     return render_template(
-        'index.html', logged_in=logged_in
+        'index.html', logged_in=logged_in,user_id = user_id
     )
 
 @app.route('/login', methods=['GET'])
@@ -68,7 +62,7 @@ def page_login_get():
 
         user_id = get_userid()
         
-        resp = make_response(redirect(url_for('page_feature_get')))
+        resp = make_response(redirect(url_for('page_index')))
         resp.set_cookie('user_id', str(user_id))
         return resp
     
@@ -107,6 +101,188 @@ def decode_base(base64_message):
    
     return message
 
+
+F13R_SALT           = "ontea_tct_pullakai"
+EXPIRE_TIME_MINUTES = 20
+
+VALID_SESSION      = 0
+BROKEN_SESSION_ID  = 1
+SESSION_EXPIRED    = 2
+IP_MISMATCH        = 3
+USERID_MISMATCH    = 4
+INVALID_SESSION_ID = 5
+
+import socket
+
+def get_ip():
+    hostname = socket.gethostname()
+    ip = socket.gethostbyname(hostname)
+    return ip
+
+import datetime
+import time
+
+def get_current_time_millis():
+
+    millis = int(round(time.time() * 1000))
+
+    return millis
+
+def get_session_base(userid):
+    
+    # sessionid format: ip_userid_expireat_salt
+
+    ip = get_ip()
+    current_time_millis = get_current_time_millis()
+    expire_time_millis = current_time_millis + (EXPIRE_TIME_MINUTES * 60 * 1000)
+
+    session_base = ip + '_' + str(userid) + '_' + str(expire_time_millis) + '_' + F13R_SALT 
+    session_base_end = encode_base(session_base)
+
+    return session_base_end
+
+def validate_sessionid(sid):
+    """
+        Session Format:
+        ip_userid_expireat_salt
+
+        result:
+        0 - valid session
+        1 - broken session id
+        2 - sessoin expired
+        3 - ip mismatch
+        4 - userid mismatch
+        5 - invalid session id
+
+    """
+
+    if(sid is None):
+        return False, INVALID_SESSION_ID
+
+    decoded_session_id = decode_base(sid)
+
+    # 1 - broken session id
+    if(not decoded_session_id):
+        return False, BROKEN_SESSION_ID
+
+    # 1 - broken session id
+    if('_' not in decoded_session_id):
+        return False, BROKEN_SESSION_ID
+
+    session_parts = decoded_session_id.split('_')
+
+    userid = int(session_parts[1])
+
+    # 4 - userid mismatch
+    # TODO: Please fix this later
+    '''
+    if(userid != SAMPLE_USERID):
+        return False, USERID_MISMATCH
+    '''
+
+    session_userip = session_parts[0]
+
+    # 3 - ip mismatch
+    ip = get_ip()
+    if(session_userip != ip):
+        return False, IP_MISMATCH
+
+    # check session whether it is expired or not
+    future_expire_millis = int(session_parts[2])
+    current_time_millis =get_current_time_millis()
+
+    seconds_left = (future_expire_millis - current_time_millis) / 1000
+
+    # 2 - sessoin expired
+    if(seconds_left < 0):
+        return False, SESSION_EXPIRED
+
+    return True, VALID_SESSION
+
+
+def created_sessionid(userid):
+
+    return get_session_base(userid)
+
+def get_userid_from_sid(sid):
+
+    decoded_session_id = decode_base(sid)
+
+    session_parts = decoded_session_id.split('_')
+
+    userid = int(session_parts[1])
+
+    return userid
+    
+
+def login_user(username,password):
+    col = db["user_details"]
+    user_creds = col.find_one({"email" : username})
+
+    if (user_creds is None):
+        return "user does not exist"
+    
+
+    if (not match_password(user_creds['password'], password)):
+        return "invalid password"
+    
+    user_id           = user_creds['user_id']
+    user_name         = user_creds['username']
+    authenticated     = 'Authentication successful'
+    session['userid'] = user_creds['user_id']
+    is_mentor          = user_creds["user_role"]
+
+
+    sid = created_sessionid(user_id)
+
+    result_dict = {
+        "username" : user_name,
+        "user_id" : user_id,
+        "user_role" : is_mentor,
+        "authenticated" : authenticated,
+        "sid" : sid
+    }
+
+    return result_dict
+
+@app.route('/login', methods=['POST'])
+def page_login_post():
+
+    username    = request.values.get('email')
+    password    = request.values.get('password')
+    result_json = login_user(username, password)
+    logged_in   = is_session_valid()
+
+    session[SESSION_ID_KEY] = result_json['sid']
+    session["user_id"]      = result_json['user_id']
+    result                  = result_json
+
+    user_id = get_userid()
+    try:
+        session['redirect_url'] = "/"
+        resp = make_response(redirect(session["redirect_url"]))
+    except:
+        resp = make_response(redirect(url_for('/')))
+
+    resp.set_cookie('user_id', str(user_id))
+   
+    return resp
+
+def get_last_user_id():
+
+    col = db["user_details"]
+
+    last_user_id      = col.find().sort([('user_id',-1)]).limit(1)
+
+    try:
+        last_user_id = last_user_id[0]['user_id']
+    except:
+        last_user_id = 0
+
+    # user_id = last_user_id + 1
+
+    return last_user_id
+
 @app.route('/signup', methods=['POST'])
 def page_signup_post():
 
@@ -115,7 +291,12 @@ def page_signup_post():
     username  = request.values.get('username')
     email     = request.values.get('email')
     password  = request.values.get('password')
-    user_role = request.json['user_role']
+    user_role = request.values.get('user_type')
+
+    user_id = get_last_user_id()
+
+    new_user_id = user_id + 1
+
 
     logged_in = is_session_valid()
 
@@ -128,6 +309,7 @@ def page_signup_post():
         return "user already exists"
     
     user_dict = {
+        "user_id"  : new_user_id,
         "username" : username,
         "email"    : email,
         "password" : hashpass,
@@ -136,7 +318,15 @@ def page_signup_post():
 
     col.insert_one(user_dict)
 
-    return True
+    return "True"
+
+
+@app.route('/signup', methods=['GET'])
+def page_signup_get():
+
+    return render_template(
+        'sign_up.html'
+    )
 
 @app.route('/get/user/details', methods=['GET'])
 def get_user_details_ui():
@@ -705,3 +895,6 @@ def get_contribution_of(user_id):
         data.append({'date': docs['created_at'], 'contrib': docs['contrib']})
     return data
 
+
+if __name__ == '__main__':
+    app.run('0.0.0.0', 3000, True)

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>
+        TEAM-MIT
+    </title>
+
+    {% include "header.html" %}
+</head>
+
+<body>
+
+    <div>
+        <nav class="navbar navbar-white navbar-fixed-top">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12 text-center">
+                        <a class="custom_head animated fadein" href="#">
+                            <img id="logo-login" src="{{ url_for('static', filename='img/logo.png') }}" width="40%" height="40%" />
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <section class="inner-pg">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-block-right login">
+                            <h2 class="text-center">Register a new account</h2>
+                            <p class="text-center">
+                                Already Signed Up? Click here to
+                                <a href="/login">Login</a>
+                            </p>
+                            <form action="/signup" method="POST">
+                                <div id="err-msg"></div>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" placeholder="User Name" id="username" name="username" />
+                                </div>
+                                <div class="form-group">
+                                    <!-- <input type="text" class="form-control" name="user_name" id="name" placeholder="User Name" /> -->
+
+                                    <input type="email" class="form-control" name="email" placeholder="Email Address" id="email" />
+                                </div>
+                                <div class="form-group">
+                                    <input type="password" class="form-control" placeholder="Password" name="password" id="pwd" />
+                                </div>
+                                <div class="form-group">
+                                    <input type="password" class="form-control" placeholder="Confirm Password" name="password" id="pwd1" />
+                                    <!-- <input
+                                        type="text"
+                                        class="form-control"
+                                        placeholder="Location"
+                                        id="location"
+                                    />
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        placeholder="Country"
+                                        id="country"
+                                    />
+                                    <textarea
+                                        class="form-control"
+                                        placeholder="BIO"
+                                        id="bio"
+                                    ></textarea> -->
+                                </div>
+                                <div class="form-group">
+                                    <!-- <input type="text" class="form-control" name="user_name" id="name" placeholder="User Name" /> -->
+
+                                    <input type="text" class="form-control" name="user_type" placeholder="User Type" id="user_type" />
+                                </div>
+                                <button type="submit" id="submit" class="btn btn-primary btn-block">
+                                Register
+                                </button>
+                                
+
+                               
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+</body>
+
+</html>
