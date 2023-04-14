@@ -4,7 +4,7 @@ import os.path
 import os
 import json
 import re
-import requests
+
 from datetime import datetime
 from flask_cors import CORS
 import random
