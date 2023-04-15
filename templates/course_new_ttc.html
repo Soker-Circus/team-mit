@@ -495,19 +495,7 @@
                           
                             {% for item in video.chapter_topics %}
 
-                            {% if validity == False%}
-                            <li class="course-progress__item">
-                                <a><div class="course-progress__icon">
-                                    <img
-                                    src="{{ url_for('static', filename='img/check-circle.svg') }}"
-                                    alt="check-circle"
-                                    class="img-fluid"
-                                    />
-                                </div>
-                                {{item.video_title}}
-                                </a>
-                            </li>
-                            {%else%}
+                          
                             <li class="course-progress__item">
                                 <a href="/course/video/{{video.course_id}}/{{item.ttc_id}}">
                                     <div class="course-progress__icon">
@@ -520,7 +508,7 @@
                                     {{item.video_title}}
                                 </a>
                             </li>
-                            {% endif %}
+                         
                             {% endfor %}
                           
                           

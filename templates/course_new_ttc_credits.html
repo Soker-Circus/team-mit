@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>
+        Teamit
+    </title>
+    {% include "header.html" %}
+
+    <link href="{{ url_for('static', filename='css/vidoe-site.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/course-inner.css') }}" rel="stylesheet">
+</head>
+<link href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" rel="stylesheet">
+<style>
+    /* tr {
+        border-bottom: solid;
+        border-bottom-width: 1px;
+        height: 44px;
+    }
+
+    a {
+        color: #464545;
+    }
+
+    a:hover {
+        color: #464545;
+
+    }
+
+    h3 {
+        color: #7b007b;
+        font-weight:510;
+    }
+    body {
+            background-color: white;
+            overflow-x: hidden;
+        } */
+        /* .container{
+            text-align: center;
+        } */
+
+    /* ::-webkit-scrollbar-thumb{
+        background: #09ff98;
+        border-radius: 20px;
+        padding: 2px;
+    }
+    ::-webkit-scrollbar-track{
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    ::-webkit-scrollbar{
+        width: 15px;
+    } */
+
+</style>
+
+<body>
+
+    {% include "top_nav_loggedin.html" %}
+
+
+    <!-- subscribe -->
+    <section class="subscribe-main">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-8">
+              <div class="subscribe-inner">
+                <h2>{{title}}</h2>
+                <p>
+                    Expand your knowledge on {{title}}
+                </p>
+                <button>
+                    <a href="/subscribe/courses/ttc/{{course_id}}">
+                        Subscribe
+                    </a>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </section>
+    <!-- ENd subscribe -->
+
+    <!-- Current credit -->
+    <section class="current-credit-main">
+        <div class="container">
+          <div class="current-credit-inner">
+            <div class="row">
+              <div class="col-lg-3 col-md-3 col-sm-12">
+                <div class="current-credit-details">
+                  <h2>
+                    Your Current <br />
+                    Tact credits
+                  </h2>
+                  <p>{{user_credits}}</p>
+                  <span>-</span>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-3 col-sm-12">
+                <div class="current-credit-details">
+                  <h2>
+                    Course Subscribe <br />
+                    Tact Cost
+                  </h2>
+                  <p>{{subscription_cost}}</p>
+                  <span>=</span>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-3 col-sm-12">
+                <div class="current-credit-details">
+                  <h2>
+                    Remaining Tact Credits <br />
+                    after Subscription
+                  </h2>
+                  <p>{{remaining_credits}}</p>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-3 col-sm-12">
+                <div class="subscribe-btn">
+                  <button>
+                    <a href="/subscribe/courses/ttc/{{course_id}}">
+                        Subscribe
+                    </a>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </section>
+    <!-- END Current credit -->
+
+    <!-- mobile btn -->
+    <!-- <div class="inroll-btn">
+        <button>ENROLL</button>
+    </div> -->
+
+    {% include "footer.html" %}
+</body>
+
+</html>

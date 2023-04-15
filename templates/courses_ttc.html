@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>
+        Teamit
+    </title>
+    {% include "header.html" %}
+
+    <link href="{{ url_for('static', filename='css/vidoe-site.css') }}" rel="stylesheet">
+</head>
+<link href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" rel="stylesheet">
+<style>
+    tr {
+        border-bottom: solid;
+        border-bottom-width: 1px;
+        height: 44px;
+    }
+
+    a {
+        color: #464545;
+    }
+
+    a:hover {
+        color: #464545;
+
+    }
+
+    h2 {
+        color: #7b007b;
+    }
+
+    /* .breadcrumb{
+    background-color:
+}
+   */
+</style>
+
+<body style="overflow-x:hidden;">
+
+    {% include "top_nav_loggedin.html" %}
+
+    <section class="inner-pg-dash" style="height: auto;">
+
+
+        <div class="container">
+            <div class="row">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/features">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/all/courses">Courses</a></li>
+                        <li class="breadcrumb-item">
+                            Course
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+
+
+        </div>
+
+        <div class="row text-center mb-5x">
+            <div class="col-lg-12 col-md-7 col-sm-9 col-xs-12"
+                style="background-color: rgb(5,87,145); width: 100%;height: 35rem; text-align: center;">
+
+                <div class="margin" style="margin-top: 9rem;">
+
+                    <h1 class="white-text bold" style="color: white;text-align: left;">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{title}}</h1>
+                    <h3 class="white-text bold" style="color: white;text-align: left;">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        Expand your knowledge
+                    </h3>
+
+                    <br>
+                    {% if validity == False%}
+                    <div class="card" style="height: 30rem;float: right;margin-top: -20rem;left: -15rem;width: 20%;">
+                       <br>
+                       <br>
+
+                        <div class="card-header">
+                            <h3 style="color: black;">Course Subscription Cost</h3>
+                        </div>
+                        <div class="card-body">
+                          <h2 class="card-title">{{subscription_cost}} Credits</h2>
+                       
+                          
+                        </div>
+                        {% if remaining_credits != None%}
+                        <div class="hov">
+                           
+                            <a class="btn btn-primary btn-sign" id="myButton"
+                                style="border-radius: 2px;padding-left: 2rem;padding-right: 2rem;text-align: left;" href="/subscribe/courses/ttc/credits/{{course_id}}">Subscribe</a>
+                                
+                            <br>
+                            <br>
+                        </div>
+                        {%else%}
+                        <div class="card-body">
+                            <h3 class="card-title">Your Credits is Low</h3>
+                            <h3 class="card-title">Your current Credits is {{user_credits}}</h3>
+                         
+                            
+                          </div>
+                        
+                        {%endif%}
+                    </div>
+                    {%endif%}
+                </div>
+
+               
+            </div>
+        </div>
+        </div>
+        </div>
+
+
+        <section class="modal-testimonial " style="background-color: white ;">
+            <div class="container text-align">
+                {%if description!=None%}
+                <div class="card" style="width: 120rem;box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;margin:auto">
+                    <div class="card-body">
+                        <!-- <h5 class="card-title" style="font-size: 30px;">What you'll learn</h5>
+                        <p class="card-text">FULLY UPDATED FOR ANS-C00: Pass the AWS Certified Networking Specialty
+                            Certification</p>
+                        <p class="card-text">All 700+ slides available as downloadable PDF</p>
+                        <p class="card-text">Learn networking on AWS in depth</p>
+                        <p class="card-text">Practice alongside several advanced hands-on</p> -->
+                        <h1>Description</h1>
+                        <br>
+                        <p style="width: 80rem;">{{description}}</p>
+                    </div>
+                </div>
+                <br>
+                <br>
+                {%endif%}
+                <br>
+
+
+
+                {% for video in result %}
+
+                <div class="accordion" style="width: 105%;box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);">
+
+                    <div class="accordion" id="accordionExample">
+                        <div class="card">
+                            <div class="card-header" id="heading{{loop.index}}">
+                                <h2 class="mb-0">
+                                    <button type="button" class="btn btn-link" data-toggle="collapse"
+                                        data-target="#collapse{{loop.index}}">
+                                        <i class="fa fa-plus"></i>
+
+                                        Chapter: {{video.chap_name}}
+                                    </button>
+                                </h2>
+                            </div>
+
+
+                            <div id="collapse{{loop.index}}" class="collapse" aria-labelledby="heading{{loop.index}}"
+                                data-parent="#accordionExample">
+                                <div class="card-body">
+                                    {% for item in video.chapter_topics %}
+                                    {% if validity == False%}
+                                    <ul>
+                                        <li><a href="#">{{item.video_title}}</a></li>
+                                        <br>
+
+                                    </ul>
+                                    {%else%}
+                                    <ul>
+                                        <li><a
+                                                href="/course/video/{{video.course_id}}/{{item.ttc_id}}">{{item.video_title}}</a>
+                                        </li>
+                                        <br>
+
+                                    </ul>
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+
+
+                        </div>
+                    </div>
+                </div>
+
+    
+
+                {% endfor %}
+
+
+
+            </div>
+        </section>
+
+
+
+    
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script src="js/bootstrap.min.js"></script>
+
+
+        <script>
+      $(document).ready(function() {
+          
+          // Add minus icon for collapse element which
+          // is open by default
+          $(".collapse.show").each(function() {
+              $(this).prev(".card-header").find(".fa")
+                  .addClass("fa-minus").removeClass("fa-plus");
+          });
+
+          // Toggle plus minus icon on show hide
+          // of collapse element
+          $(".collapse").on('show.bs.collapse', function() {
+              $(this).prev(".card-header").find(".fa")
+                  .removeClass("fa-plus").addClass("fa-minus");
+          }).on('hide.bs.collapse', function() {
+              $(this).prev(".card-header").find(".fa")
+                  .removeClass("fa-minus").addClass("fa-plus");
+          });
+      });
+        </script>
+
+
+        {% include "footer.html" %}
+</body>
+
+</html>

@@ -1422,7 +1422,7 @@ def get_users_tact_coins(user_id):
     col = db["user_transactions"]
     col2 = db["credits"]
 
-    user_tact_credits       = col2.find({user_id : int(user_id)})
+    user_tact_credits       = col2.find({"user_id" : int(user_id)})
 
     user_total_tact_coins   = 0
     user_total_credit_coins = 0
@@ -1434,7 +1434,7 @@ def get_users_tact_coins(user_id):
 
         user_total_credit_coins+=user_tact_credit['tact_credits']
 
-    return json.dump(user_total_credit_coins)
+    return user_total_credit_coins
 
 def get_credits_info(user_id, course_id):
 
@@ -1495,7 +1495,7 @@ def page_show_videos_get_ttc(course_id):
 
     result_dict2 = {}
     try:
-        result_dict2        = get_course_ttc_to_edit(course_id, s_id)
+        result_dict2        = get_course_ttc_to_edit(course_id)
 
         objectives          = result_dict2["objectives"]
         user_credits        = user_total_credits_get
@@ -1517,7 +1517,14 @@ def page_show_videos_get_ttc(course_id):
         description         = "Error - description"
         subtitle            = "Error - subtitle"
         validity            = validity_get
-
+    import random
+    course_videos_li= ["https://www.youtube.com/watch?v=HimR8Xtz17U",
+                          "https://www.youtube.com/watch?v=UFD4SP91tSM",
+                          "https://www.youtube.com/watch?v=UFD4SP91tSM",
+                          "https://www.youtube.com/watch?v=obH0Po_RdWk",
+                          "https://www.youtube.com/watch?v=MsnQ5uepIaE"]
+    
+    course_videos_list = random(course_videos_li)
     return render_template(
         'course_new_ttc.html', 
         result              = details_get, 
@@ -1529,9 +1536,178 @@ def page_show_videos_get_ttc(course_id):
         user_credits        = user_credits, 
         subscription_cost   = subscription_cost, 
         remaining_credits   = remaining_credits, 
-        objectives          = objectives
+        objectives          = objectives,
+        course_videos_list = course_videos_list
     )
 
+@app.route("/subscribe/courses/ttc/credits/<course_id>", methods=['GET'])
+
+def get_credits_info_api(course_id):
+
+    s_id                = get_sid()
+    userid              = get_userid()
+
+    subscription_cost_get, user_total_credits_get, remaining_credits_get              = get_credits_info(userid, course_id)
+    result_dict2        = get_course_ttc_to_edit(course_id)
+
+    user_credits        = user_total_credits_get
+    subscription_cost   = subscription_cost_get
+    remaining_credits   = remaining_credits_get
+
+    return render_template(
+        'course_new_ttc_credits.html', 
+        course_id           = course_id, 
+        user_credits        = user_credits, 
+        subscription_cost   = subscription_cost, 
+        remaining_credits   = remaining_credits, 
+        title               = result_dict2["name"]
+    )
+
+def get_last_credits_id():
+
+    col = db["credits"]
+
+    last_credits_id = col.find().sort([('credits_id',-1)]).limit(1)
+
+    try:
+        last_credit_id = last_credits_id[0]['credits_id']
+    except:
+        last_credit_id = 0
+
+    return last_credit_id
+
+def get_user_courses_ttc(user_id):
+
+    col = db["course_subscribers_ttc"]
+    col2 = db["user_details"]
+
+    course_subscribers = col.find({"user_id":int(user_id)})
+    # course_subscribers = f12_course_subscribers_ttc_van.find_one({
+    #     "user_id": int(user_id)
+    # })
+    courses_list = []
+    # current_user = f12_user.objects(
+    #     user_id=user_id).only('username', 'email')[0]
+    # current_user = current_user.to_json()
+    current_user = col2.find_one({
+        "user_id":   int(user_id)
+    })
+
+    for course_subscriber in course_subscribers:
+
+        # tlogger.info('course : ', course)
+
+        del course_subscriber["_id"]
+
+        # get course details
+
+        c_course_obj = get_course_ttc(int(course_subscriber["course_id"]))
+
+        if(c_course_obj is None):
+            continue
+
+        course_subscriber['course_name'] = c_course_obj['name']
+
+        # tlogger.info('current_user : ', current_user)
+        course_subscriber['username'] = current_user['username']
+
+
+        courses_list.append(course_subscriber)
+
+    return courses_list
+
+@app.route('/subscribed/courses', methods=["GET"])
+
+def page_show_courses_ttc_get():
+
+    user_id = get_userid()
+    s_id    = get_sid()
+
+
+    result_dict = get_user_courses_ttc(user_id)
+
+    # return jsonify(result_dict)
+
+    return render_template(
+        'courses_ttc.html', 
+        result = result_dict
+    )
+
+@app.route('/subscribe/courses/ttc/<course_id>', methods=["GET"])
+def subscribe_courses_ttc_api(course_id):
+
+    s_id        = get_sid()
+    userid      = get_userid()
+    result_dict = subscribe_courses(userid, course_id)
+
+
+    return redirect(url_for('page_show_all_courses_get'))
+
+def get_last_course_subscriber_ttc_id():
+
+    col = db["course_subscribers_ttc"]
+
+    last_course_subscriber_id = col.find().sort(
+        [('course_subscriber_id', -1)]).limit(1)
+
+    try:
+        last_course_subscriber_id = last_course_subscriber_id[0]['course_subscriber_id']
+    except Exception as err:
+        last_course_subscriber_id = 0
+
+    return last_course_subscriber_id
+
+def subscribe_courses(user_id, course_id):
+
+    col = db["course_ttc"]
+    col2 = db["credits"]
+    col3 = db["course_subscribers_ttc"]
+
+    category_info = col.find_one({"course_id": int(course_id)})
+    subscription_cost = category_info['course_credits']
+
+    user_total_credit_coins = get_users_tact_coins(
+        user_id)
+    if int(user_total_credit_coins) >= subscription_cost:
+        current_datetime = current_datetime = datetime.now()
+        
+        last_credits_id = get_last_credits_id()
+        credits_info = {
+            "credits_id": int(last_credits_id+1),
+            "tact_credits": -subscription_cost,
+            "cse_id": 2,
+            "user_id": int(user_id),
+            "created_at": current_datetime,
+            "updated_at": current_datetime,
+        }
+        col2.insert_one(credits_info)
+      
+        course_info = col.find_one(
+            {"course_id": int(course_id)})
+        last_id = get_last_course_subscriber_ttc_id()
+        new_id = last_id + 1
+        course_id = course_info['course_id']
+        created_at = current_datetime
+        updated_at = current_datetime
+        # expiry_date = datetime.datetime(current_datetime.year, current_datetime.month+relativedelta(months=1), current_datetime.day,
+        #                                 current_datetime.hour, current_datetime.minute, current_datetime.second, current_datetime.microsecond)
+        course_subscriber_info = {
+            "course_subscriber_id": new_id,
+            "course_id": course_id,
+            "user_id": int(user_id),
+            "subscribed_date": created_at,
+            "expiry_date": "2026-06-15T00:00:00.000+00:00",
+            "created_at": created_at,
+            "updated_at": updated_at
+        }
+        try:
+            col3.insert_one(course_subscriber_info)
+            # return True, ErrorCode.SUCCESS
+        except pymongo.errors.DuplicateKeyError as duplicate_error:
+            pass
+        return True
+        # return False, ErrorCode.DUPLICATE_ENTRY
+    return False
 
 def get_course_ttc(course_id):
     col = db["course_ttc"]
@@ -1549,7 +1725,6 @@ def get_course_ttc(course_id):
         "course_status" : course["course_status"]
      }
 
-    
 
     return result_dict
 
@@ -1734,16 +1909,26 @@ def page_show_single_video_ttc_get(course_id, ttc_id):
     if(learners_note_get):
         learners_note = learners_note_get
 
+    import random 
+    course_videos_li= ["https://www.youtube.com/embed/v=HimR8Xtz17U",
+                          "https://www.youtube.com/watch?v=UFD4SP91tSM",
+                         
+                          "https://www.youtube.com/watch?v=obH0Po_RdWk",
+                          "https://www.youtube.com/watch?v=MsnQ5uepIaE"]
+    
+    course_videos_list = random.choice(course_videos_li)
+
     return render_template('video_ttc_v2.html', 
         edit            = False, 
-        vimeo           = "https://www.youtube.com/embed/il_t1WVLNxk",
+        vimeo           = "https://www.youtube.com/watch?v=MsnQ5uepIaE",
         learners_note   = learners_note,
         course_name     = course_name_get,
         side_nav        = course_details_get,
         result          = chapters_get[0],
         prev            = previous_ttc_id_get,
         next            = next_ttc_id_get,
-        course_id       = int(course_id)
+        course_id       = int(course_id),
+        course_videos_list = course_videos_list
     )
 
 import os
