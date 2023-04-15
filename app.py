@@ -1422,16 +1422,11 @@ def get_users_tact_coins(user_id):
     col = db["user_transactions"]
     col2 = db["credits"]
 
-    user_tact_coins         = col.find({user_id : int(user_id)})
     user_tact_credits       = col2.find({user_id : int(user_id)})
 
     user_total_tact_coins   = 0
     user_total_credit_coins = 0
-    for user_tact_coins in user_tact_coins:
-
-        del user_tact_coins["_id"]
-
-        user_total_tact_coins+=user_tact_coins['tact_coins']
+    
 
     for user_tact_credit in user_tact_credits:
 
@@ -1439,7 +1434,7 @@ def get_users_tact_coins(user_id):
 
         user_total_credit_coins+=user_tact_credit['tact_credits']
 
-    return user_total_tact_coins, user_total_credit_coins
+    return json.dump(user_total_credit_coins)
 
 def get_credits_info(user_id, course_id):
 
@@ -1448,7 +1443,7 @@ def get_credits_info(user_id, course_id):
     category_info       = col.find_one({"course_id": int(course_id)})
     subscription_cost   = category_info['course_credits']
 
-    _, user_total_credits = get_users_tact_coins(
+    user_total_credits = get_users_tact_coins(
         int(user_id)
     )
 
@@ -1496,7 +1491,7 @@ def page_show_videos_get_ttc(course_id):
     user_id     = get_userid()
 
     validity_get, details_get = get_details_of_course(course_id, user_id)
-    subscription_cost_get, user_total_credits_get, remaining_credits_get      = get_credits_info(user_id, s_id, course_id)
+    subscription_cost_get, user_total_credits_get, remaining_credits_get      = get_credits_info(user_id, course_id)
 
     result_dict2 = {}
     try:
