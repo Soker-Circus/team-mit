@@ -91,7 +91,7 @@ def page_index():
     user_id = get_userid()
     # tlogger.info("logged_in", logged_in)
     return render_template(
-        'index.html', logged_in=logged_in,user_id = user_id
+        'tasks.html', logged_in=logged_in,user_id = user_id
     )
 
 @app.route('/login', methods=['GET'])
@@ -1810,7 +1810,40 @@ def send_email_post():
     )
 
     return "sent successfully"
-  
 
+@app.route("/learning/path",methods = ["GET"])
+def learning_path():
+
+    return render_template("learningPath.html")
+
+@app.route("/mentor",methods = ["GET"])
+def mentor():
+
+    return render_template("mentor.html")
+
+@app.route("/mentor/dashboard",methods = ["GET"])
+def mentor_dashboard():
+
+    return render_template("mentorDashboard.html")
+
+@app.route("/mentor/homepage",methods = ["GET"])
+def mentor_homepage():
+
+    return render_template("mentorHomepage.html")
+
+@app.route("/mentor/suggestions",methods = ["GET"])
+def mentor_suggestions():
+
+    return render_template("mentorSuggestions.html")
+
+@app.route("/progress",methods = ["GET"])
+def progress():
+
+    return render_template("progress.html")
+
+@app.route("/calendar",methods = ["GET"])
+def calendar():
+
+    return render_template("calendarpreneur.html")
 if __name__ == '__main__':
     app.run('0.0.0.0', 5000, True)
