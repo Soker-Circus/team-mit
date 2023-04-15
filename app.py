@@ -1910,13 +1910,13 @@ def page_show_single_video_ttc_get(course_id, ttc_id):
         learners_note = learners_note_get
 
     import random 
-    course_videos_li= ["https://www.youtube.com/embed/v=HimR8Xtz17U",
-                          "https://www.youtube.com/watch?v=UFD4SP91tSM",
+    course_videos_li= ["https://www.youtube.com/embed/njLEDvoDjtk",
+                          "https://www.youtube.com/embed/obH0Po_RdWk",
                          
                           "https://www.youtube.com/watch?v=obH0Po_RdWk",
                           "https://www.youtube.com/watch?v=MsnQ5uepIaE"]
     
-    course_videos_list = random.choice(course_videos_li)
+    # course_videos_list = random.choice(course_videos_li)
 
     return render_template('video_ttc_v2.html', 
         edit            = False, 
@@ -1928,7 +1928,6 @@ def page_show_single_video_ttc_get(course_id, ttc_id):
         prev            = previous_ttc_id_get,
         next            = next_ttc_id_get,
         course_id       = int(course_id),
-        course_videos_list = course_videos_list
     )
 
 import os
