@@ -1798,10 +1798,9 @@ def send_email(
 @app.route("/send/email", methods = ["GET"])
 def send_email_post():
 
-
     to_emails       = str_to_list(ERROR_RECIPIENTS)
-    email_subject   = 'Test Email'
-    html_content    = 'Some dummy content'
+    email_subject   = 'Reminder for Contest!!!'
+    html_content    = 'You have a contest at 9 PM today. Be prepared!!'
 
     send_email(
         email_subject,
@@ -1831,11 +1830,6 @@ def mentor_homepage():
 
     return render_template("mentorHomepage.html")
 
-@app.route("/mentor/suggestions",methods = ["GET"])
-def mentor_suggestions():
-
-    return render_template("mentorSuggestions.html")
-
 @app.route("/progress",methods = ["GET"])
 def progress():
 
@@ -1844,6 +1838,6 @@ def progress():
 @app.route("/calendar",methods = ["GET"])
 def calendar():
 
-    return render_template("calendarpreneur.html")
+    return render_template("calendar.html")
 if __name__ == '__main__':
     app.run('0.0.0.0', 5000, True)
