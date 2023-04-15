@@ -1,0 +1,16 @@
+version: "3"
+services:
+  web:
+    build: .
+    environment:
+      SMTP_FROM: ${SMTP_FROM}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_URL: ${SMTP_URL}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      ERROR_RECIPIENTS: ${ERROR_RECIPIENTS}
+      HOUSILON_EMAIL_PORT: ${HOUSILON_EMAIL_PORT}
+    ports:
+      - "${PY_PORT}:${PY_PORT}"
+    volumes:
+      - .:/code
