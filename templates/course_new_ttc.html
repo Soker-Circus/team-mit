@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Teammit</title>
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" /> -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tiro+Gurmukhi&display=swap" rel="stylesheet">
+
+    <link href="{{ url_for('static', filename='css/article.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/course1.css') }}" rel="stylesheet">
+
+    <meta charset="utf-8" />
+    {% include "header.html" %}
+
+    <style>
+        
+        * {
+            font-family: Verdana, Geneva, Tahoma, sans-serifly;
+        }
+
+
+
+        body {
+            background-color: whitesmoke;
+
+        }
+        .card-body{
+            font-family:Helvetica;
+        }
+
+
+        h1,
+        h2 {
+            font-family: helvetica;
+            font-weight: 700;
+        }
+
+        #header {
+            display: flex;
+            background: white;
+        }
+
+        #udemy_logo {
+            width: 100px;
+            border: 1px solid white;
+            height: 50px;
+        }
+
+        #search_box>input {
+            flex-grow: 2;
+            border: 0px solid black;
+            width: 95%;
+            height: 30px;
+            margin-right: 15px;
+            /* border-radius: 30px; */
+            outline: none;
+        }
+
+        .search-btn {
+            width: 20px;
+            height: 20px;
+        }
+
+        #search_box {
+            flex-grow: 2;
+            margin-bottom: 1%;
+            display: flex;
+            margin-top: 5px;
+            border: 1px solid black;
+            border-radius: 40px;
+        }
+
+        .header_text {
+            font-size: .9rem;
+            font-weight: 400;
+            line-height: 1.4;
+            margin-top: 20px;
+        }
+
+        #sign_up {
+            background: black;
+            border: 1px solid black;
+            width: 90px;
+            margin: 10px 3px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        #log_in {
+            background: white;
+            border: 1px solid black;
+            width: 90px;
+            margin: 10px auto;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        #cart {
+            background: white;
+            border: 0px solid black;
+        }
+
+        #cart>img {
+            width: 30px;
+            height: 30px;
+        }
+
+        #globe {
+            background: white;
+            border: 1px solid black;
+            margin: 10px 3px;
+        }
+
+        #globe>img {
+
+            width: 20px;
+            height: 20px;
+        }
+
+        .black-bg {
+            border: none;
+            font-family: Verdana, Geneva, Tahoma, sans-serifly;
+            text-decoration: none;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            position: relative;
+            padding: 1rem 2rem;
+            margin: auto;
+
+            width: 80%;
+            background-color: #055791;
+            /* border:2px solid red; */
+            height: 400px;
+
+        }
+
+        .content {
+            /* border:3px solid blue; */
+            height: 350px;
+            width: 600px;
+            color: white;
+        }
+
+        .course-box {
+            height: 450px;
+            border: 3px solid rgba(104, 104, 104, 0.31);
+            width: 300px;
+            float: left;
+            margin-left: 5%;
+            margin-top: 3%;
+            margin-bottom: 40px;
+            color: black;
+            background-color: white;
+            box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+            border-radius:20px;
+            padding:20px;
+
+        }
+
+        .course-content {
+            width: 750px;
+            margin-left: 10%;
+            /* margin-top: 30px; */
+            margin-bottom:20px;
+            background-color:white;
+            border-radius:20px;
+            padding:20px;
+        }
+
+        #box-2 {
+            display: flex;
+            flex-direction: column;
+            margin-top: 10px;
+            z-index:3;
+
+        }
+
+        #box-2 img {
+            width: 100%;
+            height: 6%;
+
+        }
+
+        #gift:hover {
+            cursor: pointer;
+        }
+
+        #box-btn-2:hover {
+            cursor: pointer;
+        }
+
+        #box-btn-1:hover {
+            cursor: pointer;
+        }
+
+        img {
+            margin-left: 0%;
+        }
+
+        #box-3-1 {
+            margin-top: 30px;
+            width: 560px;
+            display: grid;
+            grid-template-columns: 280px 280px;
+            padding: 15px;
+            gap:20px;
+        }
+
+        #box-btn-1 {
+            background-color: rgb(0, 255, 170);
+            padding: 5%;
+            width: 260px;
+            color: rgb(0, 0, 0);
+            font-weight: 300;
+            font-size: 20px;
+            border: none;
+            margin:65px;
+        }
+
+        #box-btn-2 {
+            padding: 5%;
+            width: 260px;
+            font-size: 20px;
+            font-weight: 300;
+            background-color: rgb(255, 255, 255);
+            margin-top: 15px;
+            border-color: rgba(121, 121, 121, 0.392);
+        }
+    
+
+
+        .box-2-2 {
+            padding: 2%;
+            width: 260px;
+            font-size: 20px;
+            font-weight: 300;
+            background-color: white;
+            margin:40px;
+        }
+
+        #day {
+            text-align: center;
+            font-size: 12px;
+        }
+
+        #hour {
+            font-size: 14px;
+            margin-left: 7%;
+        }
+
+        .class {
+            text-align: center;
+        }
+
+        #deve {
+            color: #ffff15;
+        }
+
+        #c-name {
+            font-size: 3.5rem;
+            font-family: Verdana, Geneva, Tahoma, sans-serifly;
+            color:white;
+            padding-top:60px;
+        }
+
+        #star {
+            color: gold;
+        }
+
+        #best {
+            border: solid;
+            background-color: goldenrod;
+            color: black;
+            width: 70px;
+        }
+
+        #price {
+            font-size: 30px;
+            margin: 30px;
+            font-weight: 900;
+        }
+
+        #gift {
+            text-align: center;
+        }
+
+        .req-content {
+            width: 800px;
+            margin-left: 20%;
+            padding: 15px;
+
+        }
+
+        .desc {
+            width: 800px;
+            margin-left: 20%;
+            padding: 15px;
+        }
+
+        .index {
+            width: 800px;
+            margin-left: 20%;
+            padding: 15px;
+        }
+
+        .collapsible {
+            background-color: rgb(239, 252, 255);
+            color: rgb(0, 0, 0);
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border-color: rgba(152, 150, 150, 0.39);
+            text-align: left;
+            outline: none;
+            font-size: 18px;
+            margin: 0.1px;
+        }
+
+        .active,
+        .collapsible:hover {
+            background-color: whitesmoke;
+        }
+
+        .collapsible:after {
+            content: '\002B';
+            color: rgb(0, 0, 0);
+            font-weight: bold;
+            float: right;
+            margin-left: 5px;
+        }
+
+
+        .active:after {
+            content: "\2212";
+        }
+
+        .index-content {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+            background-color: rgb(239, 239, 239);
+        }
+
+        .review {
+            width: 800px;
+            height: 100px;
+            border: 1px solid black;
+            margin-left: 20%;
+            padding: 15px;
+        }
+        .card-title{
+            margin-top:90px;
+            font-size:20px;
+        }
+        .card {
+            border-radius:30px;
+            font-size:25px;
+            margin:15px;
+            border:none;
+            margin-bottom:5px;
+        }
+
+        .desc{
+            width: 80rem;
+            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+            margin-top:40px;
+            margin-left:19%;
+        }
+        p{
+            /*font-family:Roboto;*/
+        }
+        .video-box{
+            margin-top: 30px;
+        }
+    </style>
+
+</head>
+
+<body>
+    {% include "top_nav_loggedin.html" %}
+
+
+    <section class="banner-section course-banner-section">
+        <div class="container">
+          <div class="flex-container row">
+            <div class="col-lg-8 col-md-12 col-sm-12 col-12 w-list">
+              <main>
+                <div class="banner-inner">
+                  <h2>{{title}}</h2>
+                  <p>{{subtitle | safe }}</p>
+                </div>
+
+                
+
+                {%if description!=None%}
+                <div class="description-section">
+                  <h2>Description</h2>
+                  <div class="description-inner-sec">
+                    <p>
+                        {{description | safe}}
+                    </p>
+                    <!-- <span>In this quickstart guide, you will: </span>
+                    <ul>
+                      <li>
+                        <img src="img/arrow.svg" alt="arrow" class="img-fluid" />
+                        <a href="#"> Create and use a repository </a>
+                      </li>
+                      <li>
+                        <img src="img/arrow.svg" alt="arrow" class="img-fluid" />
+                        <a href="#"> Start and manage a new branch </a>
+                      </li>
+                      <li>
+                        <img src="img/arrow.svg" alt="arrow" class="img-fluid" />
+                        <a href="#">
+                          Make changes to a file and push them to GitHub as
+                          commits
+                        </a>
+                      </li>
+                      <li>
+                        <img src="img/arrow.svg" alt="arrow" class="img-fluid" />
+                        <a href="#"> Open and merge a pull request </a>
+                      </li>
+                    </ul> -->
+                  </div>
+                </div>
+                {%endif%}
+
+
+                <!-- <div class="description-section">
+                  <h2>What you'll learn</h2>
+                  <div class="description-inner-sec">
+                    <p>
+                      GitHub is a code hosting platform for version control and
+                      collaboration. It lets you and others work together on
+                      projects from anywhere. This tutorial teaches you GitHub
+                      essentials like repositories, branches, commits, and pull
+                      requests. You'll create your own Hello World repository and
+                      learn GitHub's pull request workflow, a popular way to
+                      create and review code.
+                    </p>
+                    <span>In this quickstart guide, you will: </span>
+                    <div class="dubble-discription-list">
+                      <ul>
+                        <li>
+                          <img
+                            src="img/arrow.svg"
+                            alt="arrow"
+                            class="img-fluid"
+                          />
+                          <a href="#"> Learn how to use Git in Github </a>
+                        </li>
+                      </ul>
+                      <ul>
+                        <li>
+                          <img
+                            src="img/arrow.svg"
+                            alt="arrow"
+                            class="img-fluid"
+                          />
+                          <a href="#"> Lean how toManipulate Branches </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div> -->
+
+  
+                {% if result['video'] != None %}
+                <div class="accordion-section">
+                  <!-- <h2>This path has 5 highly curated courses</h2> -->
+
+                  <div class="accordions">
+
+                    {% for video in result %}
+                    <div class="accordion">
+                      <input type="checkbox" id="first_{{loop.index}}" />
+                      <label for="first_{{loop.index}}" class="acc-label first_{{loop.index}}-mobile">
+                        <h5>
+                          <span class="color-secondary"> CH {{loop.index}}: </span>
+                          <span class="course-text">{{video.chap_name}}</span>
+                        </h5>
+                        <!-- <a href="#" class="start-plan">Start this Path</a> -->
+                      </label>
+                      <!-- <a href="#" class="mobile-path-btn">Start this Path</a> -->
+  
+                      <div class="acc-content">
+                        <ul class="course-progress">
+                          
+                            {% for item in video.chapter_topics %}
+
+                          
+                            <li class="course-progress__item">
+                                <a href="/course/video/{{video.course_id}}/{{item.ttc_id}}">
+                                    <div class="course-progress__icon">
+                                        <img
+                                        src="{{ url_for('static', filename='img/check-circle.svg') }}"
+                                        alt="check-circle"
+                                        class="img-fluid"
+                                        />
+                                    </div>
+                                    {{item.video_title}}
+                                </a>
+                            </li>
+                         
+                            {% endfor %}
+                          
+                          
+                        </ul>
+                      </div>
+                    </div>
+                    {% endfor %}
+                    
+                    
+                    
+                    
+                  </div>
+                </div>
+                {% endif %}
+
+              </main>
+            </div>
+
+            {%if validity ==False %}
+            <div class="col-lg-4">
+              <div class="sidebar course-sidebar-main">
+                <div class="sidemenu-img">
+                  <!-- <img src="img/sidemenu.png" alt="sidemenu" class="img-fluid" /> -->
+                </div>
+                <div class="course-sidebar">
+                  <h3>
+                    <b>{{subscription_cost}}</b> <br />
+                     Credits
+                  </h3>
+                </div>
+
+                {% if remaining_credits != None%}
+                <div class="enroll-btn">
+                  <a href="/subscribe/courses/ttc/credits/{{course_id}}">Subscribe</a>
+                </div>
+                
+                {%else%}
+                <p>
+                    Your Credits is Low
+
+                    <br>
+                    <a href="/buy/credits" style="color:blue; font-size:14px">Buy more credits here</a>
+                </p>
+                {%endif%}
+                <p>
+                    Your current <br />
+                     Credits is <b>{{user_credits}}</b>
+                </p>
+              </div>
+
+              
+            </div>
+            {%endif%}
+
+          </div>
+        </div>
+    </section>
+   
+
+    <section>
+        {%if objectives%}
+        <div class="course-content description-section">
+            <div id="box-3">
+                <h2>What you'll learn</h2>
+
+                <div id="box-3-1">
+                    {%for objective in objectives%}
+                    <p><i class="fa fa-check" aria-hidden="true"></i>  {{objective}}</p>
+                    {%endfor%}
+                </div>
+            </div>
+        </div>
+        {%endif%}
+    </section>
+
+    <br>
+    <br>
+    
+
+
+
+  
+
+
+    {% include "footer.html" %}
+
+</body>
+<script>
+
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function () {
+            this.classList.toggle("active");
+            var content = this.nextElementSibling;
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+            }
+        });
+    }
+
+</script>
+<script>
+   $(document).ready(function() {
+          
+          // Add minus icon for collapse element which
+          // is open by default
+          $(".collapse.show").each(function() {
+              $(this).prev(".card-header").find(".fa")
+                  .addClass("fa-minus").removeClass("fa-plus");
+          });
+
+          // Toggle plus minus icon on show hide
+          // of collapse element
+          $(".collapse").on('show.bs.collapse', function() {
+              $(this).prev(".card-header").find(".fa")
+                  .removeClass("fa-plus").addClass("fa-minus");
+          }).on('hide.bs.collapse', function() {
+              $(this).prev(".card-header").find(".fa")
+                  .removeClass("fa-minus").addClass("fa-plus");
+          });
+      });
+      </script>
+
+</html>

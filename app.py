@@ -4,20 +4,59 @@ import os.path
 import os
 import json
 import re
-import requests
+
 from datetime import datetime
 from flask_cors import CORS
-import random
-import urllib.request
-from urllib.parse import urlparse
-from functools import wraps
-from authlib.integrations.flask_client import OAuth
-# from decouple import config
-from werkzeug.utils import secure_filename
+
+
 import pymongo
 from pymongo import MongoClient
+from flask_pymongo import PyMongo,pymongo
+from flask_mongoengine import MongoEngine
+from flask import Flask
+from flask_bcrypt import Bcrypt
+from flask_cors import CORS
+import os
+
+
+# DB import
+from flask_pymongo import PyMongo,pymongo
+
+# from business.scheduler_handler import 
+from flask_apscheduler import APScheduler
+# scheduler methods import
+import time
+from flask import Blueprint
+
+api = Blueprint('featurepreneur_api_bp', __name__)
 
 app = Flask(__name__)
+
+app.register_blueprint(api)
+
+
+app.config["MONGO_URI"] = "mongodb+srv://prakash-1211:prakash@cluster0.enw9p.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+
+
+app.config['MONGODB_SETTINGS'] = {
+    'db': 'teamit',
+    'host': app.config["MONGO_URI"]
+}
+
+mongo = PyMongo(app)
+bcrypt = Bcrypt()
+CORS(app)
+
+
+scheduler = APScheduler()
+scheduler.init_app(app)
+
+mongo  = PyMongo(app)
+
+# Setup Mongo Engine
+db = MongoEngine()
+db.init_app(app)
+
 app.secret_key = 'enjaamiTale$eFennelda$S'
 SESSION_ID_KEY = "sid"
 
@@ -52,7 +91,7 @@ def page_index():
     user_id = get_userid()
     # tlogger.info("logged_in", logged_in)
     return render_template(
-        'index.html', logged_in=logged_in,user_id = user_id
+        'tasks.html', logged_in=logged_in,user_id = user_id
     )
 
 @app.route('/login', methods=['GET'])
@@ -1141,6 +1180,843 @@ def add_la_tag(la_tag, user_id, title, la_tags, link, date):
 
     except pymongo.errors.DuplicateKeyError as duplicate_error:
         return False
+    
 
+@app.route('/all/courses', methods=["GET"])
+def page_show_all_courses_get():
+    s_id = get_sid()
+    result_dict = get_visible_courses_ttc()
+
+    return render_template('all_courses.html', result=result_dict)
+
+
+def get_visible_courses_ttc():
+    col = db["course_ttc"]
+    # courses = f12_course_ttc.objects(visible=True)
+    courses = col.find()
+
+    courses_list = []
+
+    for course in courses:
+
+        course['created_at_fuzzy'] = '1 day ago'
+
+        del course["_id"]
+
+        courses_list.append(course)
+
+    return courses_list
+
+# class course_subscribers_ttc(db.Document):
+
+#     course_subscriber_id    = db.IntField()
+#     course_id               = db.IntField()
+#     user_id                 = db.IntField()
+#     created_at              = db.DateTimeField()
+#     subscribed_date         = db.DateTimeField()
+#     expiry_date             = db.DateTimeField()
+#     updated_at              = db.DateTimeField()
+
+#     def to_json(self):
+
+#         _dict = {
+#             "course_subscriber_id"  : self.course_subscriber_id,
+#             "course_id"             : self.course_id,
+#             "user_id"               : self.user_id,
+#             "created_at"            : self.created_at,
+#             "subscribed_date"       : self.subscribed_date,
+#             "expiry_date"           : self.expiry_date,
+#             "updated_at"            : self.updated_at
+#         }
+
+#         return _dict
+    
+# class f12_chapter(db.Document):
+
+#     chap_id          = db.IntField()
+#     chap_name        = db.StringField()
+#     course_id        = db.IntField()
+#     chap_index       = db.IntField()
+#     created_at       = db.DateTimeField()
+#     updated_at       = db.DateTimeField()
+
+#     def to_json(self):
+
+#         _dict = {
+#             "chap_id"        : self.chap_id,
+#             "chap_name"      : self.chap_name,
+#             "chap_index"     : self.chap_index,   
+#             "course_id"      : self.course_id,
+#             "created_at"     : self.created_at,
+#             "updated_at"     : self.updated_at
+#         }
+
+#         return _dict
+
+
+def get_chapters_of_course(course_id):
+    col = db["chapter"]
+
+    courses = col.find({"course_id":int(course_id)})
+
+    courses_list = []
+
+    # tlogger.info(f'courses : {courses}')
+
+    for course in courses:
+
+        # tlogger.info('course : ', course)
+
+        del course["_id"]
+
+
+        courses_list.append(course)
+
+    return courses_list
+
+def get_details_of_course(course_id, user_id = None):
+    col1 = db["course_subscribers_ttc"]
+    col = db["topics"]
+    details = []
+
+    if(user_id):
+        course_subscribers = col1.find({
+            "course_id"   : int(course_id), 
+            "user_id"     : int(user_id)
+        })
+    else:
+        course_subscribers = col1.find({
+            "course_id"   : int(course_id), 
+            "user_id"     : None
+        })
+
+    from datetime import datetime
+
+    current_date_str = datetime.now()
+
+    try:
+        for course_subscriber in course_subscribers:
+
+            # tlogger.info('course : ', course)
+
+            del course_subscriber["_id"]
+
+            expiry_date = course_subscriber['expiry_date']
+
+        if current_date_str < expiry_date:
+            validity = True
+
+        else:
+            validity = False    # not valid
+
+    except:
+        validity = False
+
+    chapters = get_chapters_of_course(course_id)
+
+    for c_chapter in chapters:
+        result = col.aggregate([
+            {
+                "$match":
+                {
+                    "chap_id": c_chapter["chap_id"]
+                }
+            },
+            {
+                "$lookup":
+                {
+                    "from": "ttc",
+                    "localField": "ttc_id",
+                    "foreignField": "ttc_id",
+                    "as": "TTC_INFO"
+                }
+            },
+            {
+                "$unwind": "$TTC_INFO"
+            },
+            {
+                "$lookup":
+                {
+                    "from": "chapter",
+                    "localField": "chap_id",
+                    "foreignField": "chap_id",
+                    "as": "CHAPTER_INFO"
+                }
+            },
+            {
+                "$unwind": "$CHAPTER_INFO"
+            }
+        ])
+
+        result_list = []
+        final_dict = {
+            "chapter_topics": []
+        }
+
+        for item in result:
+            del item["_id"]
+            del item["CHAPTER_INFO"]["_id"]
+            del item["TTC_INFO"]["_id"]
+
+            final_dict["chapter_topics"].append(item["TTC_INFO"])
+            result_list.append(item)
+
+        single_chapter = result_list[0]
+
+        final_dict["chap_id"] = c_chapter["chap_id"]
+        final_dict["chap_index"] = single_chapter["CHAPTER_INFO"]["chap_index"]
+        final_dict["chap_name"] = single_chapter["CHAPTER_INFO"]["chap_name"]
+        final_dict["course_id"] = single_chapter["CHAPTER_INFO"]["course_id"]
+
+        details.append(final_dict)
+
+    return validity, details
+
+# class user_transactions(db.Document):
+
+#     trans_id                 = db.IntField()
+#     user_id                  = db.IntField()
+#     ref_type_id              = db.IntField()
+#     tact_coins               = db.IntField()
+#     created_at               = db.DateTimeField()
+#     updated_at               = db.DateTimeField()
+#     cse_id                   = db.IntField()
+#     def to_json(self):
+
+#         _dict = {
+#             "trans_id"      : self.trans_id,        
+#             "user_id"       : self.user_id,
+#             "ref_type_id"   : self.ref_type_id,
+#             "tact_coins"    : self.tact_coins,
+#             "created_at"    : self.created_at,
+#             "updated_at"    : self.updated_at,
+#             "cse_id"        : self.cse_id
+#         }
+        
+
+#         return _dict
+    
+# class f12_credits(db.Document):
+    
+#     credits_id              = db.IntField()
+#     cse_id                  = db.IntField()
+#     user_id                 = db.IntField()
+#     tact_credits            = db.IntField()
+#     created_at              = db.DateTimeField()
+#     updated_at              = db.DateTimeField()
+
+#     def to_json(self):
+
+
+#         _dict   =   {
+#                     "credits_id"    : self.credits_id,
+#                     "user_id"       : self.user_id,
+#                     "cse_id"        : self.cse_id,
+#                     "tact_credits"  : self.tact_credits,
+#                     "created_at"    : self.created_at,
+#                     "updated_at"    : self.updated_at
+#                     }
+#         return _dict
+
+def get_users_tact_coins(user_id):
+    col = db["user_transactions"]
+    col2 = db["credits"]
+
+    user_tact_credits       = col2.find({"user_id" : int(user_id)})
+
+    user_total_tact_coins   = 0
+    user_total_credit_coins = 0
+    
+
+    for user_tact_credit in user_tact_credits:
+
+        del user_tact_credit["_id"]
+
+        user_total_credit_coins+=user_tact_credit['tact_credits']
+
+    return user_total_credit_coins
+
+def get_credits_info(user_id, course_id):
+
+    col = db["course_ttc"]
+    
+    category_info       = col.find_one({"course_id": int(course_id)})
+    subscription_cost   = category_info['course_credits']
+
+    user_total_credits = get_users_tact_coins(
+        int(user_id)
+    )
+
+    if int(user_total_credits) >= subscription_cost:
+        remaining_credits = user_total_credits - subscription_cost
+    else:
+        remaining_credits = None
+
+    return subscription_cost, user_total_credits, remaining_credits
+
+
+def get_course_ttc_to_edit(course_id):
+
+    col = db["course_ttc"]
+    
+    course_ttc = col.find_one({"course_id": int(course_id)})
+
+    name            = course_ttc["name"]
+    course_credits  = course_ttc['course_credits']
+    visible         = course_ttc["visible"]
+    description     = course_ttc["description"]
+    subtitle        = course_ttc.get("subtitle", "&nbsp;") 
+
+    try:
+        objectives  = course_ttc["objectives"]
+    except:
+        objectives = []
+
+    course_ttc_info = {
+        "name"              : name,
+        "course_credits"    : int(course_credits),
+        "visible"           : bool(visible),
+        "description"       : description,
+        "objectives"        : objectives,
+        "subtitle"          : subtitle
+    }
+
+    return course_ttc_info
+
+@app.route('/course/<course_id>', methods=["GET"])
+# @requires_session
+def page_show_videos_get_ttc(course_id):
+
+    s_id        = get_sid()
+    user_id     = get_userid()
+
+    validity_get, details_get = get_details_of_course(course_id, user_id)
+    subscription_cost_get, user_total_credits_get, remaining_credits_get      = get_credits_info(user_id, course_id)
+
+    result_dict2 = {}
+    try:
+        result_dict2        = get_course_ttc_to_edit(course_id)
+
+        objectives          = result_dict2["objectives"]
+        user_credits        = user_total_credits_get
+        subscription_cost   = subscription_cost_get
+        remaining_credits   = remaining_credits_get
+
+        title               = result_dict2["name"]
+        description         = result_dict2["description"]
+        subtitle            = result_dict2["subtitle"]
+        validity            = validity_get
+    except Exception as e:
+
+        objectives          = []
+        user_credits        = user_total_credits_get
+        subscription_cost   = subscription_cost_get
+        remaining_credits   = remaining_credits_get
+
+        title               = "Error - title"
+        description         = "Error - description"
+        subtitle            = "Error - subtitle"
+        validity            = validity_get
+    import random
+    course_videos_li= ["https://www.youtube.com/watch?v=HimR8Xtz17U",
+                          "https://www.youtube.com/watch?v=UFD4SP91tSM",
+                          "https://www.youtube.com/watch?v=UFD4SP91tSM",
+                          "https://www.youtube.com/watch?v=obH0Po_RdWk",
+                          "https://www.youtube.com/watch?v=MsnQ5uepIaE"]
+    
+    course_videos_list = random(course_videos_li)
+    return render_template(
+        'course_new_ttc.html', 
+        result              = details_get, 
+        course_id           = course_id, 
+        validity            = validity, 
+        title               = title, 
+        description         = description, 
+        subtitle            = subtitle, 
+        user_credits        = user_credits, 
+        subscription_cost   = subscription_cost, 
+        remaining_credits   = remaining_credits, 
+        objectives          = objectives,
+        course_videos_list = course_videos_list
+    )
+
+@app.route("/subscribe/courses/ttc/credits/<course_id>", methods=['GET'])
+
+def get_credits_info_api(course_id):
+
+    s_id                = get_sid()
+    userid              = get_userid()
+
+    subscription_cost_get, user_total_credits_get, remaining_credits_get              = get_credits_info(userid, course_id)
+    result_dict2        = get_course_ttc_to_edit(course_id)
+
+    user_credits        = user_total_credits_get
+    subscription_cost   = subscription_cost_get
+    remaining_credits   = remaining_credits_get
+
+    return render_template(
+        'course_new_ttc_credits.html', 
+        course_id           = course_id, 
+        user_credits        = user_credits, 
+        subscription_cost   = subscription_cost, 
+        remaining_credits   = remaining_credits, 
+        title               = result_dict2["name"]
+    )
+
+def get_last_credits_id():
+
+    col = db["credits"]
+
+    last_credits_id = col.find().sort([('credits_id',-1)]).limit(1)
+
+    try:
+        last_credit_id = last_credits_id[0]['credits_id']
+    except:
+        last_credit_id = 0
+
+    return last_credit_id
+
+def get_user_courses_ttc(user_id):
+
+    col = db["course_subscribers_ttc"]
+    col2 = db["user_details"]
+
+    course_subscribers = col.find({"user_id":int(user_id)})
+    # course_subscribers = f12_course_subscribers_ttc_van.find_one({
+    #     "user_id": int(user_id)
+    # })
+    courses_list = []
+    # current_user = f12_user.objects(
+    #     user_id=user_id).only('username', 'email')[0]
+    # current_user = current_user.to_json()
+    current_user = col2.find_one({
+        "user_id":   int(user_id)
+    })
+
+    for course_subscriber in course_subscribers:
+
+        # tlogger.info('course : ', course)
+
+        del course_subscriber["_id"]
+
+        # get course details
+
+        c_course_obj = get_course_ttc(int(course_subscriber["course_id"]))
+
+        if(c_course_obj is None):
+            continue
+
+        course_subscriber['course_name'] = c_course_obj['name']
+
+        # tlogger.info('current_user : ', current_user)
+        course_subscriber['username'] = current_user['username']
+
+
+        courses_list.append(course_subscriber)
+
+    return courses_list
+
+@app.route('/subscribed/courses', methods=["GET"])
+
+def page_show_courses_ttc_get():
+
+    user_id = get_userid()
+    s_id    = get_sid()
+
+
+    result_dict = get_user_courses_ttc(user_id)
+
+    # return jsonify(result_dict)
+
+    return render_template(
+        'courses_ttc.html', 
+        result = result_dict
+    )
+
+@app.route('/subscribe/courses/ttc/<course_id>', methods=["GET"])
+def subscribe_courses_ttc_api(course_id):
+
+    s_id        = get_sid()
+    userid      = get_userid()
+    result_dict = subscribe_courses(userid, course_id)
+
+
+    return redirect(url_for('page_show_all_courses_get'))
+
+def get_last_course_subscriber_ttc_id():
+
+    col = db["course_subscribers_ttc"]
+
+    last_course_subscriber_id = col.find().sort(
+        [('course_subscriber_id', -1)]).limit(1)
+
+    try:
+        last_course_subscriber_id = last_course_subscriber_id[0]['course_subscriber_id']
+    except Exception as err:
+        last_course_subscriber_id = 0
+
+    return last_course_subscriber_id
+
+def subscribe_courses(user_id, course_id):
+
+    col = db["course_ttc"]
+    col2 = db["credits"]
+    col3 = db["course_subscribers_ttc"]
+
+    category_info = col.find_one({"course_id": int(course_id)})
+    subscription_cost = category_info['course_credits']
+
+    user_total_credit_coins = get_users_tact_coins(
+        user_id)
+    if int(user_total_credit_coins) >= subscription_cost:
+        current_datetime = current_datetime = datetime.now()
+        
+        last_credits_id = get_last_credits_id()
+        credits_info = {
+            "credits_id": int(last_credits_id+1),
+            "tact_credits": -subscription_cost,
+            "cse_id": 2,
+            "user_id": int(user_id),
+            "created_at": current_datetime,
+            "updated_at": current_datetime,
+        }
+        col2.insert_one(credits_info)
+      
+        course_info = col.find_one(
+            {"course_id": int(course_id)})
+        last_id = get_last_course_subscriber_ttc_id()
+        new_id = last_id + 1
+        course_id = course_info['course_id']
+        created_at = current_datetime
+        updated_at = current_datetime
+        # expiry_date = datetime.datetime(current_datetime.year, current_datetime.month+relativedelta(months=1), current_datetime.day,
+        #                                 current_datetime.hour, current_datetime.minute, current_datetime.second, current_datetime.microsecond)
+        course_subscriber_info = {
+            "course_subscriber_id": new_id,
+            "course_id": course_id,
+            "user_id": int(user_id),
+            "subscribed_date": created_at,
+            "expiry_date": "2026-06-15T00:00:00.000+00:00",
+            "created_at": created_at,
+            "updated_at": updated_at
+        }
+        try:
+            col3.insert_one(course_subscriber_info)
+            # return True, ErrorCode.SUCCESS
+        except pymongo.errors.DuplicateKeyError as duplicate_error:
+            pass
+        return True
+        # return False, ErrorCode.DUPLICATE_ENTRY
+    return False
+
+def get_course_ttc(course_id):
+    col = db["course_ttc"]
+    # course = fs_course_van.objects(course_id = int(course_id))[0]
+    
+    course = col.find_one({"course_id":int(course_id)})
+    
+    
+    result_dict = {
+        "name" : course["name"],
+        "course_credits": course["course_credits"],
+        "visible"  : course["visible"],
+        "description" : course["description"],
+        "subtitle"   : course["subtitle"],
+        "course_status" : course["course_status"]
+     }
+
+
+    return result_dict
+
+def get_video_of_id(ttc_id, course_id):
+
+    col = db["topics"]
+    col2 = db["ttc"]
+
+    chapters = get_chapters_of_course(course_id)
+
+    c_course_obj = get_course_ttc(course_id)
+
+    course_name = c_course_obj['name']
+
+    ch_ids              = []
+    curr_chap_id        = None
+    curr_topic_index    = None
+    next_ttc_id         = None
+    previous_ttc_id     = None
+    all_topics          = []
+    course_details      = []
+
+    for c_chapter in chapters:
+
+        ch_ids.append(c_chapter["chap_id"])
+        
+        
+
+    course_topics = col.find({"chap_id": {"$in": ch_ids}})
+    for video in course_topics:
+        if video["ttc_id"] == int(ttc_id):
+            curr_chap_id        = video["chap_id"]
+            curr_topic_index    = video["topic_index"]
+
+        all_topics.append(video)
+
+    bef_temp = list(
+        filter(
+            lambda ttc: ttc["chap_id"] == curr_chap_id 
+            and ttc["topic_index"] == curr_topic_index-1, all_topics
+        )
+    )
+
+    if len(bef_temp) == 0:
+        bef_chapter = list(
+            filter(
+                lambda ttc: ttc["chap_id"] == curr_chap_id-1, all_topics
+            )
+        )
+
+        if len(bef_chapter) != 0:
+            highest_index = max([x['topic_index'] for x in bef_chapter])
+            bef_ttc = list(
+                filter(
+                    lambda ttc: ttc["chap_id"] == curr_chap_id-1 
+                    and ttc["topic_index"] == highest_index, bef_chapter
+                )
+            )
+
+            previous_ttc_id = bef_ttc[0]["ttc_id"]
+    else:
+        previous_ttc_id = bef_temp[0]["ttc_id"]
+
+    next_temp = list(
+        filter(
+            lambda ttc: ttc["chap_id"] == curr_chap_id 
+            and ttc["topic_index"] == curr_topic_index+1, all_topics
+        )
+    )
+
+    if len(next_temp) == 0:
+        next_chapter = list(
+            filter(
+                lambda ttc: ttc["chap_id"] == curr_chap_id+1, all_topics
+            )
+        )
+        if len(next_chapter) != 0:
+            lowest_index = min([x['topic_index'] for x in next_chapter])
+            next_ttc = list(
+                filter(
+                lambda ttc: ttc["chap_id"] == curr_chap_id+1 
+                and ttc["topic_index"] == lowest_index, next_chapter
+            )
+        )
+            next_ttc_id = next_ttc[0]["ttc_id"]
+    else:
+        next_ttc_id = next_temp[0]["ttc_id"]
+
+    courses = col2.find_one({"ttc_id":int(ttc_id)})
+
+    courses_list = []
+
+    
+
+    course_dict = {
+        "video_title": courses["video_title"],
+        "description" : courses["description"],
+        "video_link"  : courses["video_link"],
+        "video_length" : courses["video_length"]
+        }
+
+
+    courses_list.append(course_dict)
+
+
+
+    learners_note = get_learners_note_by_video_id(ttc_id)
+
+    return course_name, courses_list, previous_ttc_id, next_ttc_id, course_details, learners_note
+
+def get_learners_note_by_video_id(ttc_id):
+
+    col = db["ttc_learners_notes"]
+    learner_notes = col.find(
+        {"ttc_id": ttc_id}
+    )
+
+    l_notes = list(
+        map(lambda x: {
+            'content' : x['content']
+        }, learner_notes)
+    )
+
+    return l_notes
+
+# class ttc(db.Document):
+
+#     ttc_id          = db.IntField()
+#     video_title     = db.StringField()
+#     video_author    = db.StringField()
+#     video_link      = db.StringField()
+#     video_author_id = db.IntField()
+#     description     = db.StringField()
+#     created_at      = db.DateTimeField()
+#     updated_at      = db.DateTimeField()
+#     video_length    = db.StringField()
+#     is_public       = db.BooleanField()
+
+#     def to_json(self):
+
+#         _dict = {
+#             "ttc_id"           : self.ttc_id,
+#             "video_title"      : self.video_title,
+#             "video_author"     : self.video_author,
+#             "video_link"       : self.video_link,
+#             "video_author_id"  : self.video_author_id,
+#             "description"      : self.description,
+#             "created_at"       : self.created_at,
+#             "updated_at"       : self.updated_at,
+#             "video_length"     : self.video_length,
+#             "is_public"        : self.is_public
+#         }
+
+#         return _dict
+    
+@app.route('/course/video/<course_id>/<ttc_id>', methods=["GET"])
+
+def page_show_single_video_ttc_get(course_id, ttc_id):
+
+    s_id    = get_sid()
+    user_id = get_userid()
+    vimeo   = True
+
+    # result_dict = fpr_business.get_all_course_details(course_id, s_id)
+    course_name_get, chapters_get, previous_ttc_id_get, next_ttc_id_get, course_details_get, learners_note_get = get_video_of_id(int(ttc_id),int(course_id))
+
+    # (result_dict) # instead of tips, use learners_note
+    # result_dict1 = fpr_business.get_tips(
+    #     result_dict["result"]["chapters"][0]["ttc_id"], 
+    #     user_id
+    # )
+
+    string      = chapters_get[0]["video_link"]
+    sub_string  = "youtube"
+
+    if(sub_string in string):
+        vimeo = False
+
+    # link = "https://www.youtube.com/embed/il_t1WVLNxk"
+
+    learners_note = []
+    if(learners_note_get):
+        learners_note = learners_note_get
+
+    import random 
+    course_videos_li= ["https://www.youtube.com/embed/njLEDvoDjtk",
+                          "https://www.youtube.com/embed/obH0Po_RdWk",
+                         
+                          "https://www.youtube.com/watch?v=obH0Po_RdWk",
+                          "https://www.youtube.com/watch?v=MsnQ5uepIaE"]
+    
+    # course_videos_list = random.choice(course_videos_li)
+
+    return render_template('video_ttc_v2.html', 
+        edit            = False, 
+        vimeo           = "https://www.youtube.com/watch?v=MsnQ5uepIaE",
+        learners_note   = learners_note,
+        course_name     = course_name_get,
+        side_nav        = course_details_get,
+        result          = chapters_get[0],
+        prev            = previous_ttc_id_get,
+        next            = next_ttc_id_get,
+        course_id       = int(course_id),
+    )
+
+import os
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+from datetime import datetime, timezone
+from datetime import date
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+SMTP_FROM       = os.getenv('SMTP_FROM')
+SMTP_PASSWORD   = os.getenv('SMTP_PASSWORD')
+SMTP_PORT       = os.getenv('SMTP_PORT')
+SMTP_URL        = os.getenv('SMTP_URL')
+SMTP_USERNAME   = os.getenv('SMTP_USERNAME')
+ERROR_RECIPIENTS    = os.environ["ERROR_RECIPIENTS"]
+
+def str_to_list(content, delimiter = ','):
+    content_list = content.split(delimiter)
+    return content_list
+
+def send_email(
+    email_subject, 
+    email_body,
+    to_emails
+):
+
+    message = Mail(
+        from_email      = SMTP_FROM,
+        to_emails       = to_emails,
+        subject         = email_subject,
+        html_content    = email_body
+    )
+
+    try:
+        sg_client       = SendGridAPIClient(SMTP_PASSWORD)
+        response        = sg_client.send(message)
+
+        print(response.status_code)
+        print(response.body)
+        # print(response.headers)
+    except Exception as e:
+        print('Error : ', e)
+
+@app.route("/send/email", methods = ["GET"])
+def send_email_post():
+
+    to_emails       = str_to_list(ERROR_RECIPIENTS)
+    email_subject   = 'Reminder for Contest!!!'
+    html_content    = 'You have a contest at 9 PM today. Be prepared!!'
+
+    send_email(
+        email_subject,
+        html_content,
+        to_emails
+    )
+
+    return "sent successfully"
+
+@app.route("/learning/path",methods = ["GET"])
+def learning_path():
+
+    return render_template("learningPath.html")
+
+@app.route("/mentor",methods = ["GET"])
+def mentor():
+
+    return render_template("mentor.html")
+
+@app.route("/mentor/dashboard",methods = ["GET"])
+def mentor_dashboard():
+
+    return render_template("mentorDashboard.html")
+
+@app.route("/mentor/homepage",methods = ["GET"])
+def mentor_homepage():
+
+    return render_template("mentorHomepage.html")
+
+@app.route("/progress",methods = ["GET"])
+def progress():
+
+    return render_template("progress.html")
+
+@app.route("/calendar",methods = ["GET"])
+def calendar():
+
+    return render_template("calendar.html")
 if __name__ == '__main__':
-    app.run('0.0.0.0', 3000, True)
+    app.run('0.0.0.0', 5000, True)
